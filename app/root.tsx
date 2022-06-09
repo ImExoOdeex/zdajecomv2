@@ -13,6 +13,7 @@ import { MetaFunction, LinksFunction } from '@remix-run/node' // Depends on the 
 
 import { ServerStyleContext, ClientStyleContext } from './context'
 import theme from './components/chakra/theme';
+import Fonts from './components/chakra/Fonts'
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
@@ -55,7 +56,7 @@ const Document = withEmotionCache(
     }, []);
 
     return (
-      <html lang="en">
+      <html lang="pl">
         <head>
           <Meta />
           <Links />
@@ -84,6 +85,7 @@ export default function App() {
     <Document>
       <ChakraProvider theme={theme}>
         <Outlet />
+        <Fonts />
       </ChakraProvider>
     </Document>
   )

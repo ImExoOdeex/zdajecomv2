@@ -10,14 +10,11 @@ const ChakraBox = chakra(motion.div, {
 
 const Index = (props: Props) => {
     return (
-        <ChakraBox
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
+        <Flex
             mx={'auto'} flexDir={'column'} maxW='1600px'>
             <Heading>Jak obliczać średnią?</Heading>
 
-        </ChakraBox>
+        </Flex>
     )
 }
 

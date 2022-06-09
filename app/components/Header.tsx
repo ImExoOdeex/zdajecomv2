@@ -24,7 +24,7 @@ function Header() {
       <Flex mx={'auto'} w={'1400px'} h='100%' alignItems={'center'} justify={{ base: 'center', md: 'space-between' }}>
         <Flex ml={2}>
           <ChakraLink as={Link} to={'/'}>
-            <Heading fontWeight={'extrabold'}>Zdaje<chakra.span bgClip={'text'} bgGradient={'linear(to-r, brand.100, pink.300)'}>.com</chakra.span> </Heading>
+            <Heading fontWeight={'extrabold'}>Zdaje<chakra.span color={'brand.100'}>.com</chakra.span> </Heading>
           </ChakraLink>
         </Flex>
         <Flex alignItems={'center'}>

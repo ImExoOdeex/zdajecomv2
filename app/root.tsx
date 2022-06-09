@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { withEmotionCache } from '@emotion/react'
-import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
+import { ChakraProvider, ColorModeScript, Switch } from '@chakra-ui/react'
 import {
   Links,
   LiveReload,
@@ -9,11 +9,14 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
+import { useOutlet } from 'react-router-dom'
 import { MetaFunction, LinksFunction } from '@remix-run/node' // Depends on the runtime you choose
-
 import { ServerStyleContext, ClientStyleContext } from './context'
 import theme from './components/chakra/theme';
 import Fonts from './components/chakra/Fonts'
+import { AnimatePresence, motion } from 'framer-motion'
+import { RemixRoute } from '@remix-run/react/components'
+import { useLocation } from 'react-router-dom';
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
@@ -81,10 +84,15 @@ const Document = withEmotionCache(
 );
 
 export default function App() {
+  const outlet = useOutlet();
   return (
     <Document>
       <ChakraProvider theme={theme}>
-        <Outlet />
+        <AnimatePresence exitBeforeEnter>
+          <motion.main key={useLocation().pathname}>
+            {outlet}
+          </motion.main>
+        </AnimatePresence>
         <Fonts />
       </ChakraProvider>
     </Document>

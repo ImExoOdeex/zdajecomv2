@@ -20,8 +20,12 @@ const styles = {
 const colors = {
     brand: {
         //purple
-        500: '#5A2D7A',
-        600: '#4A1D6A',
+        100: '#5902EC',
+        900: '#4A1D6A',
+    },
+    sec: {
+        //pink
+        500: '#FF00FF',
     },
     bg: {
         100: '#F7F7F7',

@@ -1,6 +1,6 @@
 import { MoonIcon, SunIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { Flex, IconButton, useColorModeValue, useColorMode, Heading, Link as ChakraLink, HStack, Stack, Menu, MenuButton, Button, MenuList, MenuItem } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { chakra, Flex, IconButton, useColorModeValue, useColorMode, Heading, Link as ChakraLink, HStack, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Link, useLocation } from "react-router-dom";
 
 interface HeaderLinkProps {
   children: React.ReactNode;
@@ -8,13 +8,15 @@ interface HeaderLinkProps {
 }
 
 function Header() {
+
   const HeaderLink: React.FC<HeaderLinkProps> = ({ children, to, ...props }) => {
     const hoverLink = useColorModeValue("rgba(0, 0, 0, 0.1)", "rgba(255, 255, 255, 0.1)");
     return (
-      <ChakraLink px={2} py={1} _hover={{ bg: hoverLink }} rounded='md' as={Link} to={to} {...props}>{children}</ChakraLink>
+      <ChakraLink px={2} py={1} _hover={{ bg: hoverLink }} rounded='md' as={Link} to={to} opacity={location.pathname == to ? 1 : 0.7} {...props}>{children}</ChakraLink>
     )
   };
 
+  const location = useLocation();
   const bg = useColorModeValue("bg.100", "bg.900");
   const { colorMode, toggleColorMode } = useColorMode();
   return (
@@ -22,14 +24,14 @@ function Header() {
       <Flex mx={'auto'} w={'1400px'} h='100%' alignItems={'center'} justify={{ base: 'center', md: 'space-between' }}>
         <Flex ml={2}>
           <ChakraLink as={Link} to={'/'}>
-            <Heading fontWeight={'extrabold'}>Zdaje.com</Heading>
+            <Heading fontWeight={'extrabold'}>Zdaje<chakra.span bgClip={'text'} bgGradient={'linear(to-r, brand.100, pink.300)'}>.com</chakra.span> </Heading>
           </ChakraLink>
         </Flex>
         <Flex alignItems={'center'}>
           <HStack spacing={2} mr={5} fontWeight='extrabold' display={{ base: 'none', md: 'flex' }}>
             <HeaderLink to={'/jak-obliczac'}>Jak obliczyć?</HeaderLink>
-            <HeaderLink to={'/wazona'}>ważona</HeaderLink>
             <HeaderLink to={'/zwykla'}>zwykła</HeaderLink>
+            <HeaderLink to={'/wazona'}>ważona</HeaderLink>
           </HStack>
           <IconButton display={{ base: 'none', md: 'flex' }} bg={'transparent'} icon={colorMode == 'light' ? <MoonIcon /> : <SunIcon />} aria-label={'Toggle color mode'} onClick={toggleColorMode} />
           <Menu>

@@ -89,7 +89,7 @@ export default function App() {
     <Document>
       <ChakraProvider theme={theme}>
         <AnimatePresence exitBeforeEnter>
-          <motion.main key={useLocation().pathname} exit={{ transition: { duration: 0 } }}>
+          <motion.main style={{ minHeight: '90vh' }} key={useLocation().pathname} exit={{ transition: { duration: 0 } }}>
             {outlet}
           </motion.main>
         </AnimatePresence>

@@ -19,17 +19,15 @@ const styles = {
 
 const colors = {
     brand: {
-        //purple
-        100: '#5902EC',
-        900: '#4A1D6A',
+        100: '#8F4FD3',
+        900: '#8F4FD3',
     },
     sec: {
-        //pink
         500: '#FF00FF',
     },
     bg: {
         100: '#F7F7F7',
-        900: '#1c1c1d',
+        900: '#101011',
     }
 }
 const theme = extendTheme({

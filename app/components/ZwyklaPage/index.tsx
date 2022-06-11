@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react'
-import { Flex, Heading, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, HStack, useNumberInput } from '@chakra-ui/react';
+import { Flex, Heading, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, HStack, useNumberInput, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem } from '@chakra-ui/react';
 import { motion, isValidMotionProp, AnimateSharedLayout, AnimatePresence } from 'framer-motion';
 import { Form } from '@remix-run/react';
 import { v4 as uuidv4 } from "uuid";
@@ -113,138 +113,184 @@ const Index = (props: Props) => {
         'purple.900',
     ]
 
-    const minusBgButton = useColorModeValue('red.300', 'red.400')
-    const plusBgButton = useColorModeValue('green.300', 'green.500')
-
     React.useEffect(() => {
-        document.title = average ? average.toFixed(2) + " | Zdaje.com" : "Zwykła | Zdaje.com";
-    }, [average])
+        if (type == TYPES.GRADES) {
+            document.title = average ? average.toFixed(2) + " | Zdaje.com" : "Zwykła | Zdaje.com";
+        } else {
+            document.title = average ? average.toFixed(0) + "% | Zdaje.com" : "Zwykła | Zdaje.com";
+        }
+    }, [TYPES.GRADES, average, type])
+
+    const handleMinusChange = (minusValue: any) => setMinusValue(minusValue)
+    const handlePlusChange = (plusValue: any) => setPlusValue(plusValue)
+
+    //card wrap
+    const wrapW = ['100%', 'calc(40% - 20px)', 'calc(40% - 48px)'];
 
     return (
         <Flex
             mx={[2, 2, 'auto']} flexDir={'column'} maxW='1600px'>
             <Flex flexDir={'row'} mb={2}>
                 <Flex ml={5} flexDir={'row'} w='auto' border={'2px solid'} borderColor='brand.100' rounded={'lg'} fontWeight='extrabold' p={1}>
-                    <Flex onClick={() => setType(TYPES.GRADES)} cursor={'pointer'} _hover={type == TYPES.PERCENT ? { bg: bgHoverTypes } : { bg: '' }}
+                    <Button h='25px' onClick={() => setType(TYPES.GRADES)} cursor={'pointer'} _hover={type == TYPES.PERCENT ? { bg: bgHoverTypes } : { bg: '' }}
                         px={'2.5'} py={0.7} rounded='md' bg={type == TYPES.GRADES ? 'rgba(143, 79, 211,0.4)' : ''}
                     >
                         oceny
-                    </Flex>
-                    <Flex onClick={() => setType(TYPES.PERCENT)} _hover={type == TYPES.GRADES ? { bg: bgHoverTypes } : { bg: '' }}
+                    </Button>
+                    <Button h='25px' onClick={() => setType(TYPES.PERCENT)} _hover={type == TYPES.GRADES ? { bg: bgHoverTypes } : { bg: '' }}
                         ml={1} cursor={'pointer'} px={'2.5'} py={0.7} rounded='md' bg={type == TYPES.PERCENT ? 'rgba(143, 79, 211,0.4)' : ''}>
                         procenty
-                    </Flex>
+                    </Button>
                 </Flex>
             </Flex>
 
-            <AnimateSharedLayout>
-                <Flex as={motion.div} layout flexDir={'column'} border='0px solid' rounded={'sm'} boxShadow='md' p={[2, 2, 4]}>
-                    <Heading layout as={motion.h1} fontSize={'3xl'} fontWeight='extrabold'>Jak dodać ocenę z ' + ' lub ' - ' ?</Heading>
-                    <AnimatePresence exitBeforeEnter={false}>
-                        {isPlusMinusVisible &&
-                            <ChakraBox flexDir={'row'} layout
-                                exit={{ opacity: 0, transition: { duration: .15 } }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { type: 'tween' } }}>
-                                <Flex flexDir={'column'}>
-                                    <Text>Wartość plusa: </Text>
-                                    <HStack maxW='320px'>
-                                        <Button bg={plusBgButton} onClick={() => setPlusValue(plusValue + 0.01)}>+</Button>
-                                        <Input value={plusValue.toFixed(2)} />
-                                        <Button bg={minusBgButton} onClick={() => setPlusValue(plusValue - 0.01)}>-</Button>
-                                    </HStack>
+            <Box maxW={'1200px'} w='100%' mx='auto'>
+                <AnimateSharedLayout>
+                    <Flex as={motion.div} layout flexDir={'column'} border='0px solid' rounded={'sm'} p={[2, 2, 4]}>
+                        <AnimatePresence exitBeforeEnter={false}>
 
-                                    <Text>Wartość minusa: </Text>
-                                    <HStack maxW='320px'>
-                                        <Button bg={plusBgButton} onClick={() => setMinusValue(minusValue + 0.01)}>+</Button>
-                                        <Input type={'number'} value={minusValue} onChange={(e: any) => { setMinusValue(e.target.value) }} />
-                                        <Button bg={minusBgButton} onClick={() => setMinusValue(minusValue - 0.01)}>-</Button>
-                                    </HStack>
-                                </Flex>
-                            </ChakraBox>
-                        }
-                    </AnimatePresence>
+                            {isPlusMinusVisible &&
+                                <ChakraBox flexDir={'row'} layout
+                                    exit={{ opacity: 0, transition: { duration: .15 } }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { type: 'tween' } }}>
+                                    <Heading layout as={motion.h1} fontSize={'3xl'} fontWeight='extrabold'>Jak dodać ocenę z ' + ' lub ' - ' ?</Heading>
+                                    <Flex mt={4} alignItems='center' flexDir={{ base: 'column', lg: 'row' }} justifyContent='space-between'>
+                                        <ChakraBox w={{ base: '100%', lg: '40%' }} layout flexDir={'column'}>
+                                            <Text>Wartość plusa: </Text>
+                                            <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={plusValue} onChange={handlePlusChange}>
+                                                <NumberInputField />
+                                                <NumberInputStepper>
+                                                    <NumberIncrementStepper />
+                                                    <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                            </NumberInput>
 
-                </Flex>
+                                            <Text>Wartość minusa: </Text>
+                                            <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={minusValue} onChange={handleMinusChange}>
+                                                <NumberInputField />
+                                                <NumberInputStepper>
+                                                    <NumberIncrementStepper />
+                                                    <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                            </NumberInput>
+                                        </ChakraBox>
 
-
-
-
-                <Flex as={motion.div} layout flexDir={'column'}>
-                    {average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(0) + '%'}</> : <>---</>}
-                    <Text>
-                        {grades.map((g: any, i: any) => {
-                            return (
-                                <>
-                                    <Tooltip key={g.id} hasArrow label={"usuń: " + g.value}>
-                                        <Box borderTop={'2px solid'} borderColor={colors.at(g.value)} as={motion.span} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.1 } }}
-                                            whileHover={{ opacity: 0.8 }} onClick={() => deleteGrade(i)} cursor='pointer'>
-                                            {g.value}
+                                        <Box mt={{ base: 5, lg: 0 }} textAlign={'left'} w={{ base: '', lg: '60%' }} justifyContent='center' alignItems={'center'}>
+                                            <Text
+                                                color={useColorModeValue("blackAlpha.800", "whiteAlpha.800")} alignItems={'center'} fontWeight={'500'}>Aby dodać ocenę cząstkową (czyli taką,
+                                                która zawiera - lub +), wystarczy wpisać swoją ocenę w pole, a kalkulator sam przeliczy + lub - na
+                                                podane obok wartości tych cząteczek. Pamiętaj, by dopasować wartość + i - do takiej liczby, jaka używa twoja szkoła - przeważnie jest to
+                                                -0.25 dla minusa i 0.50 dla plusa. </Text>
                                         </Box>
-                                    </Tooltip>
-                                    <chakra.span as={motion.span} _last={{ display: 'none' }}>{", "} </chakra.span>
-                                </>
-                            );
-                        })}
-                    </Text>
 
-                    <Form noValidate onSubmit={addGrade}>
-                        <Flex as={motion.div} layout flexDir={'column'}>
-                            <FormLabel htmlFor='ocena' fontSize={'12px'} mb='0'>Dodaj ocenę: </FormLabel>
-                            <Flex flexDir={'row'}>
-                                <Input
-                                    _focus={{ borderRadius: 'md', border: '2px solid', borderColor: 'pink.300' }}
-                                    border={0} borderBottom='1px' rounded={'none'} borderColor={borderColor}
-                                    autoComplete='off'
-                                    autoFocus={false}
-                                    placeholder='6'
-                                    type={'text'}
-                                    w={['100%', '75%', '40%']}
-                                    id='ocena'
-                                    value={newGrade}
-                                    onChange={(e: any) => {
-                                        // + and - grades cuz people dont like to type eg 1.5 or 2.75 etc
-                                        if (e.target.value == "1+") {
-                                            setNewGrade((1 + plusValue).toFixed(2));
-                                        }
-                                        else if (e.target.value == "2-") {
-                                            setNewGrade((2 - minusValue).toFixed(2));
-                                        }
-                                        else if (e.target.value == "2+") {
-                                            setNewGrade((2 + plusValue).toFixed(2));
-                                        }
-                                        else if (e.target.value == "3-") {
-                                            setNewGrade((3 - minusValue).toFixed(2));
-                                        }
-                                        else if (e.target.value == "3+") {
-                                            setNewGrade((3 + plusValue).toFixed(2));
-                                        }
-                                        else if (e.target.value == "4-") {
-                                            setNewGrade((4 - minusValue).toFixed(2));
-                                        }
-                                        else if (e.target.value == "4+") {
-                                            setNewGrade((4 + plusValue).toFixed(2));
-                                        }
-                                        else if (e.target.value == "5-") {
-                                            setNewGrade((5 - minusValue).toFixed(2));
-                                        }
-                                        else if (e.target.value == "5+") {
-                                            setNewGrade((5 + plusValue).toFixed(2));
-                                        }
-                                        else if (e.target.value == "6-") {
-                                            setNewGrade((6 - minusValue).toFixed(2));
-                                        }
-                                        else {
-                                            setNewGrade(e.target.value);
-                                        }
-                                    }}
-                                />
-                                <Button as={motion.button} whileTap={{ scale: 0.8, backgroundColor: 'transparent' }}
-                                    _hover={{ bg: '' }} ml={'2'} type="submit" bg={'transparent'} fontWeight='normal'>Dodaj</Button>
-                                <Button onClick={reset} as={motion.button} whileTap={{ scale: 0.8, backgroundColor: 'transparent' }}>reset</Button>
-                            </Flex>
-                        </Flex>
-                    </Form>
-                </Flex>
-            </AnimateSharedLayout >
+                                    </Flex>
+                                </ChakraBox>
+                            }
+                        </AnimatePresence>
+
+                        <AnimatePresence>
+                            {!isPlusMinusVisible &&
+                                <ChakraBox flexDir={'row'} layout
+                                    exit={{ opacity: 0, transition: { duration: .15 } }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { type: 'tween' } }}>
+                                    <Heading layout as={motion.h1} fontSize={'3xl'} fontWeight='extrabold'>kto wymyślił oceny procentowe w szkole?</Heading>
+                                </ChakraBox>
+                            }
+                        </AnimatePresence>
+
+
+                    </Flex>
+
+
+                    <Wrap spacing={[5, 5, 12]} justify='center' as={motion.ul} layout>
+
+
+                        <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'} as={motion.li} layout flexDir={'column'} p={4}>
+                            {average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(0) + '%'}</> : <>---</>}
+                            <Text>
+                                {grades.map((g: any, i: any) => {
+                                    return (
+                                        <>
+                                            <Tooltip key={g.id} hasArrow label={"usuń: " + g.value}>
+                                                <Box borderTop={'2px solid'} borderColor={colors.at(g.value)} as={motion.span} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.1 } }}
+                                                    whileHover={{ opacity: 0.8 }} onClick={() => deleteGrade(i)} cursor='pointer'>
+                                                    {g.value}
+                                                </Box>
+                                            </Tooltip>
+                                            <chakra.span as={motion.span} _last={{ display: 'none' }}>{", "} </chakra.span>
+                                        </>
+                                    );
+                                })}
+                            </Text>
+
+                            <Form noValidate onSubmit={addGrade}>
+                                <Flex as={motion.div} layout flexDir={'column'}>
+                                    <FormLabel htmlFor='ocena' fontSize={'12px'} mb='0'>Dodaj ocenę: </FormLabel>
+                                    <Flex flexDir={'row'} justifyContent='space-between'>
+                                        <Input
+                                            _focus={{ borderRadius: 'md', border: '2px solid', borderColor: 'pink.300' }}
+                                            border={0} borderBottom='1px' rounded={'none'} borderColor={borderColor}
+                                            autoComplete='off'
+                                            autoFocus={false}
+                                            placeholder='6'
+                                            type={'text'}
+                                            w={['100%', '75%', '60%']}
+                                            id='ocena'
+                                            value={newGrade}
+                                            onChange={(e: any) => {
+                                                // + and - grades cuz people dont like to type eg 1.5 or 2.75 etc
+                                                if (e.target.value == "1+") {
+                                                    setNewGrade((1 + Number(plusValue)).toFixed(2));
+                                                }
+                                                else if (e.target.value == "2-") {
+                                                    setNewGrade((2 - Number(minusValue)).toFixed(2));
+                                                }
+                                                else if (e.target.value == "2+") {
+                                                    setNewGrade((2 + Number(plusValue)).toFixed(2));
+                                                }
+                                                else if (e.target.value == "3-") {
+                                                    setNewGrade((3 - Number(minusValue)).toFixed(2));
+                                                }
+                                                else if (e.target.value == "3+") {
+                                                    setNewGrade((3 + Number(plusValue)).toFixed(2));
+                                                }
+                                                else if (e.target.value == "4-") {
+                                                    setNewGrade((4 - Number(minusValue)).toFixed(2));
+                                                }
+                                                else if (e.target.value == "4+") {
+                                                    setNewGrade((4 + Number(plusValue)).toFixed(2));
+                                                }
+                                                else if (e.target.value == "5-") {
+                                                    setNewGrade((5 - Number(minusValue)).toFixed(2));
+                                                }
+                                                else if (e.target.value == "5+") {
+                                                    setNewGrade((5 + Number(plusValue)).toFixed(2));
+                                                }
+                                                else if (e.target.value == "6-") {
+                                                    setNewGrade((6 - Number(minusValue)).toFixed(2));
+                                                }
+                                                else {
+                                                    setNewGrade(e.target.value);
+                                                }
+                                            }}
+                                        />
+                                        <Button as={motion.button} whileTap={{ scale: 0.8, backgroundColor: 'transparent' }}
+                                            _hover={{ bg: '' }} ml={'2'} type="submit" bg={'transparent'} fontWeight='normal'>Dodaj</Button>
+                                    </Flex>
+                                </Flex>
+                            </Form>
+                        </WrapItem>
+
+                        <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'} as={motion.li} layout flexDir={'column'} p={4}
+                            alignItems='center' justifyContent={'center'}>
+                            <ChakraHeading fontSize={'4xl'}>{average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(0) + '%'}</> : <>---</>}</ChakraHeading>
+
+                        </WrapItem>
+
+
+
+                    </Wrap>
+
+                </AnimateSharedLayout >
+            </Box>
 
             <Phonebottom average={average} type={type} />
         </Flex >

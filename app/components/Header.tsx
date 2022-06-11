@@ -27,7 +27,7 @@ function Header() {
             <Heading fontWeight={'extrabold'}>Zdaje<chakra.span color={'brand.100'}>.com</chakra.span> </Heading>
           </ChakraLink>
         </Flex>
-        <Flex alignItems={'center'}>
+        <Flex alignItems={'center'} mr={2}>
           <HStack spacing={2} mr={5} fontWeight='extrabold' display={{ base: 'none', md: 'flex' }}>
             <HeaderLink to={'/jak-obliczac'}>Jak obliczyć?</HeaderLink>
             <HeaderLink to={'/zwykla'}>zwykła</HeaderLink>

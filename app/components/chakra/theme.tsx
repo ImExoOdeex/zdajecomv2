@@ -26,8 +26,8 @@ const colors = {
         500: '#FF00FF',
     },
     bg: {
-        100: '#F7F7F7',
-        900: '#101011',
+        100: '#ffffff',
+        900: '#18181a',
     }
 }
 const theme = extendTheme({

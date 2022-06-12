@@ -117,7 +117,7 @@ const Index = (props: Props) => {
         if (type == TYPES.GRADES) {
             document.title = average ? average.toFixed(2) + " | Zdaje.com" : "Zwykła | Zdaje.com";
         } else {
-            document.title = average ? average.toFixed(0) + "% | Zdaje.com" : "Zwykła | Zdaje.com";
+            document.title = average ? average.toFixed(2) + "% | Zdaje.com" : "Zwykła | Zdaje.com";
         }
     }, [TYPES.GRADES, average, type])
 
@@ -126,6 +126,16 @@ const Index = (props: Props) => {
 
     //card wrap
     const wrapW = ['100%', 'calc(40% - 20px)', 'calc(40% - 48px)'];
+
+    function WrapCustomItem({ children, ...props }: any) {
+        return (
+            <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'}
+                as={motion.li} layout flexDir={'column'} p={5}
+                alignItems='center' justifyContent={'center'} {...props}>
+                {children}
+            </WrapItem>
+        )
+    }
 
     return (
         <Flex
@@ -200,18 +210,20 @@ const Index = (props: Props) => {
                     </Flex>
 
 
-                    <Wrap spacing={[5, 5, 12]} justify='center' as={motion.ul} layout>
+                    <Wrap mt={5} spacing={[5, 5, 12]} justify='center' as={motion.ul} layout>
 
 
-                        <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'} as={motion.li} layout flexDir={'column'} p={4}>
-                            {average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(0) + '%'}</> : <>---</>}
+                        <WrapCustomItem>
+                            {average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}
                             <Text>
                                 {grades.map((g: any, i: any) => {
                                     return (
                                         <>
                                             <Tooltip key={g.id} hasArrow label={"usuń: " + g.value}>
                                                 <Box borderTop={'2px solid'} borderColor={colors.at(g.value)} as={motion.span} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.1 } }}
-                                                    whileHover={{ opacity: 0.8 }} onClick={() => deleteGrade(i)} cursor='pointer'>
+                                                    whileHover={{ opacity: 0.8 }} onClick={() => deleteGrade(i)} cursor='pointer'
+                                                    _after={type == TYPES.PERCENT ? { content: `'%'` } : { content: `''` }}
+                                                >
                                                     {g.value}
                                                 </Box>
                                             </Tooltip>
@@ -277,13 +289,12 @@ const Index = (props: Props) => {
                                     </Flex>
                                 </Flex>
                             </Form>
-                        </WrapItem>
+                        </WrapCustomItem>
 
-                        <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'} as={motion.li} layout flexDir={'column'} p={4}
-                            alignItems='center' justifyContent={'center'}>
-                            <ChakraHeading fontSize={'4xl'}>{average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(0) + '%'}</> : <>---</>}</ChakraHeading>
+                        <WrapCustomItem>
+                            <ChakraHeading fontSize={'4xl'}>{average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}</ChakraHeading>
 
-                        </WrapItem>
+                        </WrapCustomItem>
 
 
 

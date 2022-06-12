@@ -11,7 +11,7 @@ const ChakraBox = chakra(motion.div, {
 });
 
 const Phonebottom = ({ average, type }: Props) => {
-    const averageType = type == 0 ? average.toFixed(2) : average.toFixed(0) + "%"
+    const averageType = type == 0 ? average.toFixed(2) : average.toFixed(2) + "%"
     return (
         // eslint-disable-next-line
         <ChakraBox initial={{ y: 70 }} animate={{ y: 0, transition: { type: 'tween' } }} exit={{ y: 70 }}

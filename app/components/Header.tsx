@@ -29,9 +29,10 @@ function Header() {
         </Flex>
         <Flex alignItems={'center'} mr={2}>
           <HStack spacing={2} mr={5} fontWeight='extrabold' display={{ base: 'none', md: 'flex' }}>
-            <HeaderLink to={'/jak-obliczac'}>Jak obliczyć?</HeaderLink>
+            <HeaderLink to={'/jak-obliczac'}>jak obliczyć?</HeaderLink>
             <HeaderLink to={'/zwykla'}>zwykła</HeaderLink>
             <HeaderLink to={'/wazona'}>ważona</HeaderLink>
+            <HeaderLink to={'/srednie'}>średnie</HeaderLink>
           </HStack>
           <IconButton display={{ base: 'none', md: 'flex' }} bg={'transparent'} icon={colorMode == 'light' ? <MoonIcon /> : <SunIcon />} aria-label={'Toggle color mode'} onClick={toggleColorMode} />
           <Menu>

@@ -7,10 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Joke {
-  id        String   @id @default(uuid())
+model Average {
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String
-  content   String
+  subject   String
+  content   Float
 }

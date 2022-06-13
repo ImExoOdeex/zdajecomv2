@@ -1,6 +1,7 @@
 import { MoonIcon, SunIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { chakra, Flex, IconButton, useColorModeValue, useColorMode, Heading, Link as ChakraLink, HStack, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { Link } from "@remix-run/react";
 
 interface HeaderLinkProps {
   children: React.ReactNode;

@@ -6,6 +6,7 @@ import { db } from "~/utils/db.server";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { Average } from '@prisma/client';
 
 // only for links
 const subjects = [
@@ -24,12 +25,14 @@ const subjects = [
 ]
 
 type LoaderData = {
-    jokeListItems: Array<{ id: string; name: string }>;
+    jokeListItems: Array<{ content: Number, subject: String }>;
 };
 
 export const loader: LoaderFunction = async () => {
     const data: LoaderData = {
-        jokeListItems: await db.joke.findMany(),
+        jokeListItems: await db.average.findMany({
+            take: 5
+        }),
     };
     return json(data);
 };
@@ -64,16 +67,12 @@ function Index() {
                 <Flex mt={5} flexDir={'column'}>
                     <Heading>Porównaj swoje średnie to średnich innych!</Heading>
 
-                    {data.jokeListItems.map((average: any) => {
-                        return (
-                            <Box key={average.id}>
-                                <Text fontSize={'xx-small'}>{average.id}</Text>
-                                <Text fontWeight={'extrabold'}>{average.content}</Text>
-                                <Text>{average.name}</Text>
-                            </Box>
-                        )
-                    }
-                    )}
+                    {data.jokeListItems.map((joke) => (
+                        <li key={joke.content.toString()}>
+                            <Link to={joke.subject.toString()}>{joke.content}</Link>
+                            <Text>{joke.subject}</Text>
+                        </li>
+                    ))}
 
                 </Flex>
             </Flex>

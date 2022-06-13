@@ -67,6 +67,7 @@ const Index = (props: Props) => {
     }
 
     function addGrade(e: any) {
+        e.preventDefault();
         const field = e.target.children[0].children[0];
         field.focus();
 
@@ -82,6 +83,31 @@ const Index = (props: Props) => {
             })
             return;
         }
+
+        if (type == TYPES.GRADES && (Number(newGrade) < 1 || Number(newGrade) > 6)) {
+            toast({
+                position: 'top',
+                variant: 'solid',
+                title: 'Błąd',
+                description: "Podaj ocenę od 1 do 6",
+                status: 'warning',
+                duration: 2000,
+                isClosable: true,
+            })
+            return;
+        } else if (type == TYPES.PERCENT && (Number(newGrade) < 0 || Number(newGrade) > 100)) {
+            toast({
+                position: 'top',
+                variant: 'solid',
+                title: 'Błąd',
+                description: "Podaj ocenę od 0 do 100",
+                status: 'warning',
+                duration: 2000,
+                isClosable: true,
+            })
+            return;
+        }
+
         //@ts-ignore
         setGrades((grades: any) => [...grades, { id: uuidv4(), value: newGrade }]);
         setNewGrade("");
@@ -213,7 +239,9 @@ const Index = (props: Props) => {
                     <Wrap mt={5} spacing={[5, 5, 12]} justify='center' as={motion.ul} layout>
 
 
-                        <WrapCustomItem>
+                        <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'}
+                            as={motion.li} layout flexDir={'column'} p={5}
+                            alignItems='center' justifyContent={'center'}>
                             {average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}
                             <Text>
                                 {grades.map((g: any, i: any) => {
@@ -240,11 +268,10 @@ const Index = (props: Props) => {
                                         <Input
                                             _focus={{ borderRadius: 'md', border: '2px solid', borderColor: 'pink.300' }}
                                             border={0} borderBottom='1px' rounded={'none'} borderColor={borderColor}
-                                            autoComplete='off'
-                                            autoFocus={false}
-                                            placeholder='6'
-                                            type={'text'}
                                             w={['100%', '75%', '60%']}
+                                            type={'text'}
+                                            autoComplete='off'
+                                            placeholder='6'
                                             id='ocena'
                                             value={newGrade}
                                             onChange={(e: any) => {
@@ -289,12 +316,14 @@ const Index = (props: Props) => {
                                     </Flex>
                                 </Flex>
                             </Form>
-                        </WrapCustomItem>
+                        </WrapItem>
 
-                        <WrapCustomItem>
+                        <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'}
+                            as={motion.li} layout flexDir={'column'} p={5}
+                            alignItems='center' justifyContent={'center'}>
                             <ChakraHeading fontSize={'4xl'}>{average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}</ChakraHeading>
 
-                        </WrapCustomItem>
+                        </WrapItem>
 
 
 

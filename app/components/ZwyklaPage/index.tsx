@@ -77,7 +77,7 @@ const Index = (props: Props) => {
         const field = e.target.children[0].children[0];
         field.focus();
 
-        if (type == TYPES.PERCENT && newGrade.endsWith('%')) {
+        if (type == TYPES.PERCENT && newGrade.endsWith('%') && isInteger(newGrade.slice(0, -1))) {
             //@ts-ignore
             setGrades((grades: any) => [...grades, { id: uuidv4(), value: newGrade.slice(0, -1) }]);
             setNewGrade("");

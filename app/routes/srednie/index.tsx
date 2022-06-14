@@ -6,7 +6,6 @@ import { db } from "~/utils/db.server";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { Average } from '@prisma/client';
 
 // only for links
 const subjects = [
@@ -23,6 +22,16 @@ const subjects = [
         "slug": "jezyk-angielski",
     }
 ]
+
+const sortedSubjects = subjects.sort((a, b) => {
+    if (a.name < b.name) {
+        return -1;
+    }
+    if (a.name > b.name) {
+        return 1;
+    }
+    return 0;
+})
 
 type LoaderData = {
     jokeListItems: Array<{ content: Number, subject: String }>;
@@ -47,7 +56,7 @@ function Index() {
                     <Text color={'brand.100'} fontSize='lg' fontWeight='bold' mb='2'>
                         Przedmioty
                     </Text>
-                    {subjects.map((subject) => {
+                    {sortedSubjects.map((subject) => {
                         return (
                             <ChakraLink textAlign={'left'} _hover={{ textDecor: 'none', bg: 'rgba(143, 79, 211, 0.1)', color: 'brand.100' }}
                                 key={subject.name} as={Link} to={subject.slug}

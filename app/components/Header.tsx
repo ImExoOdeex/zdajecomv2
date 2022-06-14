@@ -54,6 +54,11 @@ function Header() {
                   ważona
                 </MenuItem>
               </ChakraLink>
+              <ChakraLink as={Link} to={'/srednie'}>
+                <MenuItem>
+                  średnie
+                </MenuItem>
+              </ChakraLink>
               <MenuItem onClick={toggleColorMode}>
                 {colorMode == 'light' ? <MoonIcon mr={2} /> : <SunIcon mr={2} />} Zmień motyw
               </MenuItem>

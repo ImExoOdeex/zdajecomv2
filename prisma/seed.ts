@@ -15,15 +15,18 @@ function getAverages() {
     return [
         {
             content: 2.53,
-            subject: "matematyka"
+            subject: "matematyka",
+            subjectName: "Matematyka"
         },
         {
             content: 1.63,
-            subject: "jezyk-polski"
+            subject: "jezyk-polski",
+            subjectName: "Język polski"
         },
         {
             content: 4.89,
-            subject: "jezyk-angielski"
+            subject: "jezyk-angielski",
+            subjectName: "Język angielski"
         }
     ];
 }

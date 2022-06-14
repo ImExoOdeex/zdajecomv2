@@ -392,7 +392,8 @@ const Index = (props: Props) => {
                         <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'}
                             as={motion.li} layout flexDir={'column'} p={5}
                             alignItems='center' justifyContent={'center'}>
-                            <ChakraHeading fontSize={'4xl'}>{average ? <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}</ChakraHeading>
+                            <ChakraHeading fontSize={'4xl'} fontFamily='Montserrat'>{average ?
+                                <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}</ChakraHeading>
 
                         </WrapItem>
 

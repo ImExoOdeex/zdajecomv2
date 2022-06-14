@@ -8,8 +8,9 @@ datasource db {
 }
 
 model Average {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  subject   String
-  content   Float
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  subject     String
+  subjectName String
+  content     Float
 }

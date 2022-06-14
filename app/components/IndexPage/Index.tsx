@@ -11,7 +11,7 @@ function Index() {
         shouldForwardProp: (prop) => isValidMotionProp(prop) || prop === 'children',
     });
 
-    const resButton = ['90%', '60%', '75%', '75%']
+    const resButton = ['80%', '60%', '75%', '75%']
 
     return (
         <Flex h={'65vh'} flexDir={'column'}>
@@ -22,17 +22,20 @@ function Index() {
                         <chakra.span color={'pink.500'}> zdajesz!</chakra.span></Heading>
 
                     <motion.div whileHover={{ y: 7, cursor: 'pointer' }} style={{ width: '100%', display: 'flex', marginTop: '15px' }}>
-                        <ChakraLink boxShadow={'md'} _hover={{ textDecor: 'none' }} textAlign={'center'} as={Link} to='/jak-obliczac' bg={'transparent'} rounded='md' w={resButton}
+                        <ChakraLink boxShadow={'md'} _hover={{ textDecor: 'none' }} textAlign={'center'} as={Link} to='/jak-obliczac' bg={'transparent'}
+                            rounded='md' w={resButton}
                             alignItems={'center'} justifyContent='center' py={2.5} fontWeight='extrabold' mx='auto' border={'2px solid'}>Jak obliczyć?</ChakraLink>
                     </motion.div>
 
                     <motion.div whileHover={{ y: 7, cursor: 'pointer' }} style={{ width: '100%', display: 'flex', marginTop: '15px' }}>
-                        <ChakraLink boxShadow={'md'} _hover={{ textDecor: 'none' }} textAlign={'center'} as={Link} to='/zwykla' bg={useColorModeValue("blue.600", "teal.500")} rounded='md' w={resButton}
+                        <ChakraLink boxShadow={'md'} _hover={{ textDecor: 'none' }} textAlign={'center'} as={Link} to='/zwykla'
+                            bg={useColorModeValue("blue.600", "teal.500")} rounded='md' w={resButton}
                             alignItems={'center'} justifyContent='center' py={2.5} fontWeight='extrabold' color={'white'} mx='auto'>Zwykła</ChakraLink>
                     </motion.div>
 
                     <motion.div whileHover={{ y: 7, cursor: 'pointer' }} style={{ width: '100%', display: 'flex', marginTop: '15px' }}>
-                        <ChakraLink boxShadow={'md'} _hover={{ textDecor: 'none' }} textAlign={'center'} as={Link} to='/wazona' bg={'brand.100'} rounded='md' w={resButton}
+                        <ChakraLink boxShadow={'md'} _hover={{ textDecor: 'none' }} textAlign={'center'} as={Link} to='/wazona' bg={'brand.100'}
+                            rounded='md' w={resButton}
                             alignItems={'center'} justifyContent='center' py={2.5} fontWeight='extrabold' color={'white'} mx='auto'>Ważona</ChakraLink>
                     </motion.div>
 

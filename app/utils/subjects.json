@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Matematyka",
+        "slug": "matematyka"
+    },
+    {
+        "name": "Język polski",
+        "slug": "jezyk-polski"
+    },
+    {
+        "name": "Język angielski",
+        "slug": "jezyk-angielski"
+    }
+]

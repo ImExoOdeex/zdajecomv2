@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react'
-import { Flex, Heading, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, HStack, useNumberInput, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem, Divider } from '@chakra-ui/react';
+import { Flex, Heading, Link as ChakraLink, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, HStack, useNumberInput, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem, Divider, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, FormControl, VisuallyHiddenInput, Select } from '@chakra-ui/react';
 import { motion, isValidMotionProp, AnimateSharedLayout, AnimatePresence } from 'framer-motion';
-import { Form } from '@remix-run/react';
+import { Form, Link, useTransition } from '@remix-run/react';
 import { v4 as uuidv4 } from "uuid";
 import Phonebottom from '../Phonebottom';
 import { typeCookie } from './../Cookies';
 import { SettingsIcon } from '@chakra-ui/icons';
+import subjects from './../../utils/subjects.json'
 
 type Props = {}
 
@@ -17,10 +18,6 @@ const ChakraBox = chakra(motion.div, {
 const Index = (props: Props) => {
 
     const ChakraHeading = chakra(motion.h3, {
-        shouldForwardProp: (prop) => isValidMotionProp(prop) || prop === 'children',
-    });
-
-    const ChakraText = chakra(motion.p, {
         shouldForwardProp: (prop) => isValidMotionProp(prop) || prop === 'children',
     });
 
@@ -39,7 +36,7 @@ const Index = (props: Props) => {
     const [newGrade, setNewGrade] = useState('');
     const [isVisible, setVisible] = useState(false);
     const [isPlusMinusVisible, setPlusMinusVisible] = useState(false);
-    const [isSettingsScreenVisible, setSettingsScreenVisible] = useState(true);
+    const [isSettingsScreenVisible, setSettingsScreenVisible] = useState(false);
     const [plusValue, setPlusValue] = useState(0.50);
     const [minusValue, setMinusValue] = useState(0.25);
     const [maxGrade, setMaxGrade] = useState(6);
@@ -172,6 +169,16 @@ const Index = (props: Props) => {
 
     const formatMaxPercentGrade = (maxPercentGrade: number) => maxPercentGrade + `%`
     const formatMinPercentGrade = (minPercentGrade: number) => minPercentGrade + `%`
+
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
+    const { state } = useTransition();
+
+    useEffect(() => {
+        setTimeout(() => {
+            onClose();
+        }, 150)
+    }, [state])
 
     return (
         <Flex
@@ -315,12 +322,14 @@ const Index = (props: Props) => {
                         <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'}
                             as={motion.li} layout flexDir={'column'} p={5}
                             alignItems='center' justifyContent={'center'}>
-                            <Text>
+                            <Text as={motion.p} layout mb={2} fontSize='xs'>Aby usunąć ocenę po prostu na nią kliknij.</Text>
+                            <Text mb={1} fontSize='2xl'>
                                 {grades.map((g: any, i: any) => {
                                     return (
                                         <>
                                             <Tooltip key={g.id} hasArrow label={"usuń: " + g.value}>
-                                                <Box borderTop={'2px solid'} borderColor={colors.at(g.value)} as={motion.span} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.1 } }}
+                                                <Box borderTop={'2px solid'} borderColor={colors.at(g.value)} as={motion.span} initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1, transition: { duration: 0.1 } }}
                                                     whileHover={{ opacity: 0.8 }} onClick={() => deleteGrade(i)} cursor='pointer'
                                                     _after={type == TYPES.PERCENT ? { content: `'%'` } : { content: `''` }}
                                                 >
@@ -347,38 +356,18 @@ const Index = (props: Props) => {
                                             value={newGrade}
                                             onChange={(e: any) => {
                                                 // + and - grades cuz people dont like to type eg 1.5 or 2.75 etc
-                                                if (e.target.value == "1+") {
-                                                    setNewGrade((1 + Number(plusValue)).toFixed(2));
-                                                }
-                                                else if (e.target.value == "2-") {
-                                                    setNewGrade((2 - Number(minusValue)).toFixed(2));
-                                                }
-                                                else if (e.target.value == "2+") {
-                                                    setNewGrade((2 + Number(plusValue)).toFixed(2));
-                                                }
-                                                else if (e.target.value == "3-") {
-                                                    setNewGrade((3 - Number(minusValue)).toFixed(2));
-                                                }
-                                                else if (e.target.value == "3+") {
-                                                    setNewGrade((3 + Number(plusValue)).toFixed(2));
-                                                }
-                                                else if (e.target.value == "4-") {
-                                                    setNewGrade((4 - Number(minusValue)).toFixed(2));
-                                                }
-                                                else if (e.target.value == "4+") {
-                                                    setNewGrade((4 + Number(plusValue)).toFixed(2));
-                                                }
-                                                else if (e.target.value == "5-") {
-                                                    setNewGrade((5 - Number(minusValue)).toFixed(2));
-                                                }
-                                                else if (e.target.value == "5+") {
-                                                    setNewGrade((5 + Number(plusValue)).toFixed(2));
-                                                }
-                                                else if (e.target.value == "6-") {
-                                                    setNewGrade((6 - Number(minusValue)).toFixed(2));
-                                                }
-                                                else {
+                                                if (e.target.value.includes('+')) {
+                                                    setNewGrade(e.target.value.replace('+', ''));
+                                                    setNewGrade((Number(newGrade) + Number(plusValue)).toFixed(2));
+                                                } else if (e.target.value.includes('-')) {
+                                                    setNewGrade(e.target.value.replace('-', ''));
+                                                    setNewGrade((Number(newGrade) - Number(minusValue)).toFixed(2));
+                                                } else {
                                                     setNewGrade(e.target.value);
+                                                }
+
+                                                if (e.target.value.includes(',')) {
+                                                    setNewGrade(e.target.value.replace(',', '.'));
                                                 }
                                             }}
                                         />
@@ -392,8 +381,69 @@ const Index = (props: Props) => {
                         <WrapItem w={wrapW} rounded={'md'} border='0px solid' borderColor={'brand.100'}
                             as={motion.li} layout flexDir={'column'} p={5}
                             alignItems='center' justifyContent={'center'}>
-                            <ChakraHeading fontSize={'4xl'} fontFamily='Montserrat'>{average ?
+                            <Text as={motion.p} layout>Twoja średnia to:</Text>
+                            <ChakraHeading layout fontSize={'4xl'} fontFamily='Montserrat'>{average ?
                                 <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}</ChakraHeading>
+                            {average ?
+                                <Flex as={motion.div} layout flexDir={'row'} alignItems='center'>
+                                    <Text mr={2}>Wyślij swoją średnią do bazy</Text>
+                                    <Button onClick={onOpen} bg={useColorModeValue("brand.900", "brand.100")}>
+                                        <svg width="24px" viewBox="0 0 32 32"><title /><g data-name="Layer 10" id="Layer_10"><path fill='white' d="M28.7,14.23,4.43,2.1A2,2,0,0,0,1.65,4.41L5,16,1.65,27.59a2,2,0,0,0,1.89,2.53,1.92,1.92,0,0,0,.89-.22h0L28.7,17.77a2,2,0,0,0,0-3.54Z" /></g></svg>
+                                    </Button>
+                                </Flex>
+                                : null}
+
+                            <Modal motionPreset='scale' isOpen={isOpen} size='xl' onClose={onClose} isCentered>
+                                <ModalOverlay />
+                                <ModalContent color={useColorModeValue("bg.100", "bg.900")} bg={useColorModeValue("bg.900", "bg.100")}>
+                                    <ModalHeader>Wyślij swoją średnią do naszej bazy</ModalHeader>
+                                    <ModalCloseButton />
+                                    <ModalBody>
+
+                                        <Form method='post'>
+
+                                            {type == TYPES.GRADES ?
+                                                <>
+                                                    <Text textAlign={'center'}>Twoja wysyłana średnia: </Text>
+                                                    <Heading textAlign={'center'}>{average.toFixed(2)}</Heading>
+
+                                                    <VisuallyHiddenInput value={average.toFixed(2)} type='number' name='average' />
+
+                                                    {/* <Divider bg={useColorModeValue("bg.100", "bg.900")} my={2} /> */}
+
+                                                    <Text>Wybierz przedmiot: </Text>
+                                                    {/* <Input borderColor={'initial'} name='subject' type={'text'} variant='flushed' /> */}
+
+                                                    <Select
+                                                        _focusVisible={{ bg: useColorModeValue('whiteAlpha.100', 'blackAlpha.100') }}
+                                                        name='subject' sx={{ '& > option': { bg: useColorModeValue("bg.900", "bg.100") } }}
+                                                        _hover={{ bg: useColorModeValue('whiteAlpha.100', 'blackAlpha.100') }} bg={useColorModeValue("bg.900", "bg.100")} color='inherit' variant={'filled'}
+                                                    >
+                                                        {subjects.map((s: any) => {
+                                                            return <option key={s.name} value={s.slug}>{s.name}</option>
+                                                        })}
+                                                    </Select>
+
+                                                </>
+                                                :
+                                                <Heading textAlign={'center'} fontSize='2xl' color={useColorModeValue("red.400", "red.500")}>Nie można wysyłać średniej procentowej</Heading>
+                                            }
+                                            <Flex as={'footer'} mb={2} mt={10} flexDir={'row'} justifyContent='space-between'>
+                                                <Flex flexDir={'row'} alignItems='center'>
+                                                    <chakra.input sx={{ accentColor: '#D53F8C' }} disabled={type == TYPES.GRADES ? false : true} bg={'white'} color='white' required type={'checkbox'} mr={2} w='20px' h='20px' />
+                                                    <Text w={{ base: '100%', lg: '60%' }} fontSize={'sm'}>Akceptuję <ChakraLink color={useColorModeValue("brand.100", "brand.900")} as={Link} to="/regulamin">regulamin </ChakraLink>
+                                                        oraz <ChakraLink color={useColorModeValue("brand.100", "brand.900")} as={Link} to="/regulamin/zasady-wysylania-srednich-do-bazy">zasady
+                                                            uczuciwego wysyłania średniej </ChakraLink> </Text>
+                                                </Flex>
+                                                <Button disabled={type == TYPES.GRADES ? false : true} colorScheme='purple' mr={3} type='submit'>
+                                                    {state == 'submitting' ? "Wysyłanie..." : "Wyślij"}
+                                                </Button>
+                                            </Flex>
+                                        </Form>
+
+                                    </ModalBody>
+                                </ModalContent>
+                            </Modal>
 
                         </WrapItem>
 

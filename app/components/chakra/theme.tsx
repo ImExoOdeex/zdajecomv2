@@ -19,7 +19,7 @@ const styles = {
 
 const colors = {
     brand: {
-        100: '#8F4FD3',
+        100: '#bb83f7',
         900: '#8F4FD3',
     },
     sec: {

@@ -34,7 +34,7 @@ function Index() {
                     </motion.div>
 
                     <motion.div whileHover={{ y: 7, cursor: 'pointer' }} style={{ width: '100%', display: 'flex', marginTop: '15px' }}>
-                        <ChakraLink boxShadow={'md'} _hover={{ textDecor: 'none' }} textAlign={'center'} as={Link} to='/wazona' bg={'brand.100'}
+                        <ChakraLink boxShadow={'md'} _hover={{ textDecor: 'none' }} textAlign={'center'} as={Link} to='/wazona' bg={'brand.900'}
                             rounded='md' w={resButton}
                             alignItems={'center'} justifyContent='center' py={2.5} fontWeight='extrabold' color={'white'} mx='auto'>Ważona</ChakraLink>
                     </motion.div>

@@ -1,37 +1,12 @@
 import React, { useEffect } from 'react'
-import { Heading, Flex, Link as ChakraLink, Text, Box, Table, TableContainer, Tbody, Thead, Tr, Th } from '@chakra-ui/react';
+import { Heading, Flex, Link as ChakraLink, Text, Box, Table, TableContainer, Tbody, Thead, Tr, Th, chakra, useColorModeValue } from '@chakra-ui/react';
 import Layout from '../../components/Layout';
 import { Link } from '@remix-run/react';
 import { db } from "~/utils/db.server";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-
-// only for links
-const subjects = [
-    {
-        "name": "Matematyka",
-        "slug": "matematyka",
-    },
-    {
-        "name": "Język polski",
-        "slug": "jezyk-polski",
-    },
-    {
-        "name": "Język angielski",
-        "slug": "jezyk-angielski",
-    }
-]
-
-const sortedSubjects = subjects.sort((a, b) => {
-    if (a.name < b.name) {
-        return -1;
-    }
-    if (a.name > b.name) {
-        return 1;
-    }
-    return 0;
-})
+import SubjectsAside from '~/components/sredniaPage/SubjectsAside';
 
 type LoaderData = {
     averageList: Array<{ content: Number, subject: String, subjectName: String, id: number, createdAt: Date }>;
@@ -40,7 +15,13 @@ type LoaderData = {
 export const loader: LoaderFunction = async () => {
     const data: LoaderData = {
         averageList: await db.average.findMany({
-            take: 5
+            // take 20 latest records
+            take: 20,
+            // order by incrementing id
+            orderBy: {
+                id: 'desc'
+            }
+
         }),
     };
     return json(data);
@@ -55,36 +36,32 @@ function Index() {
     const timeNowHours: number = newDate.getHours();
     const timeNowDays: number = newDate.getDay();
 
+
+    const sortedAverageList = data.averageList.sort((a: any, b: any) => {
+        if (a.createdAt < b.createdAt) {
+            return -1;
+        }
+        if (a.createdAt > b.createdAt) {
+            return 1;
+        }
+        return 0;
+    }
+    ).reverse();
+
+    const tableHover = useColorModeValue("blackAlpha.100", "whiteAlpha.100")
+
     return (
         <Layout>
             <Flex flexDir={'row'} maxW='1400px' mx='auto'>
                 {/* nawigacjyny komonent */}
-                <Flex mr={5} mt={10} flexDir={'column'} display={{ base: 'none', lg: 'flex' }} w='300px' justifyContent={'center'}>
-                    <Text color={'brand.100'} fontSize='lg' fontWeight='bold' mb='2'>
-                        Przedmioty
-                    </Text>
-                    {sortedSubjects.map((subject) => {
-                        return (
-                            <ChakraLink textAlign={'left'} _hover={{ textDecor: 'none', bg: 'rgba(143, 79, 211, 0.1)', color: 'brand.100' }}
-                                key={subject.name} as={Link} to={subject.slug}
-                                alignItems='center' justifyContent={'center'} my={1} py={1} rounded='md' fontWeight={'extrabold'}
-                            >
-                                <Text ml={2}>
-                                    {subject.name}
-                                </Text>
-                            </ChakraLink>
-                        )
-                    })}
-
-
-                </Flex>
-
+                <SubjectsAside slug={''} />
                 {/* main content */}
                 <Flex mt={5} flexDir={'column'}>
                     <Heading>Porównaj swoje średnie to średnich innych!</Heading>
 
                     <Box overflowX={'auto'} overflow='auto'>
 
+                        <Heading mt={10} fontSize={'xl'}>Ostatnio dodane średnie: </Heading>
                         <TableContainer>
                             <Table size={'md'} whiteSpace='pre-wrap'>
                                 <Thead>
@@ -96,7 +73,7 @@ function Index() {
                                 </Thead>
                                 <Tbody>
 
-                                    {data.averageList.map((average) => {
+                                    {sortedAverageList.map((average) => {
                                         const createdAtDate = new Date(average.createdAt);
                                         const createdAtMinutes = createdAtDate.getMinutes();
                                         const minutesDifference = timeNowMinutes - createdAtMinutes;
@@ -111,7 +88,7 @@ function Index() {
                                             diffrence = daysDifference + ' dni'
                                         }
                                         if (hoursDifference > 0) {
-                                            diffrence = diffrence + ' ' + hoursDifference + ' godzin'
+                                            diffrence = diffrence + ' ' + hoursDifference + ' godziny'
                                         }
                                         if (minutesDifference > 0) {
                                             diffrence = diffrence + ' ' + minutesDifference + ' minut'
@@ -123,9 +100,10 @@ function Index() {
                                         console.log("timeNowHours: ", timeNowHours + " |  createdAtHours: ", createdAtHours)
 
                                         return (
-                                            <Tr key={average.id}>
-                                                <Th>{average.content}</Th>
-                                                <Th><ChakraLink as={Link} to={average.subject}>{average.subjectName}</ChakraLink></Th>
+                                            <Tr _hover={{ bg: tableHover }} key={average.id}>
+                                                <Th>{average.content.toFixed(2)}</Th>
+                                                <Th ><ChakraLink _hover={{ textDecor: 'none' }} as={Link} to={`${average.subject}`}>
+                                                    <chakra.span fontWeight={'100'} fontSize={'xx-small'}>{average.id}</chakra.span> {average.subjectName}</ChakraLink></Th>
                                                 <Th>{diffrence}</Th>
                                             </Tr>
                                         )
@@ -139,7 +117,7 @@ function Index() {
                     </Box>
                 </Flex>
             </Flex>
-        </Layout>
+        </Layout >
     )
 }
 

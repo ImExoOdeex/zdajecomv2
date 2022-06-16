@@ -1,54 +1,37 @@
-import { Flex, Heading, Link as ChakraLink, Text, chakra, Table, TableContainer, Tbody, Th, Thead, Tr, Box } from "@chakra-ui/react";
-import { json } from "@remix-run/node";
-import type { LoaderFunction } from "@remix-run/node";
-import { Link } from "react-router-dom";
-import Layout from "~/components/Layout";
+import * as React from 'react';
+import { Heading, Flex, Link as ChakraLink, Box, Table, TableContainer, Tbody, Thead, Tr, Th, chakra, useColorModeValue } from '@chakra-ui/react';
+import { Link } from '@remix-run/react';
 import { db } from "~/utils/db.server";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import SubjectsAside from "~/components/sredniaPage/SubjectsAside";
-import { getAverage } from "~/models/average.server";
-import { useEffect } from "react";
+import SubjectsAside from '~/components/sredniaPage/SubjectsAside';
 
 type LoaderData = {
     averageList: Array<{ content: Number, subject: String, subjectName: String, id: number, createdAt: Date }>;
 };
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async () => {
     const data: LoaderData = {
         averageList: await db.average.findMany({
-            take: 10,
-            where: {
-                subject: `${params.slug}`
+            // take 20 latest records
+            take: 20,
+            // order by incrementing id
+            orderBy: {
+                id: 'desc'
             }
         }),
     };
-    const dataOne = await db.average.findFirst({ where: { subject: `${params.slug}` } });
-
-    return json({ data, dataOne });
+    return json(data);
 };
 
-export default function AverageSlug() {
-    const { data, dataOne } = useLoaderData();
+function Index() {
+    const data = useLoaderData<LoaderData>();
     const newDate: any = new Date();
     const timeNowMinutes: number = newDate.getMinutes();
     const timeNowHours: number = newDate.getHours();
     const timeNowDays: number = newDate.getDay();
 
-    const opacity = .1;
-
-    const colors = [
-        `rgba(113, 128, 150, ${opacity})`,
-        `rgba(229, 62, 62, ${opacity})`,
-        `rgba(221, 107, 32, ${opacity})`,
-        `rgba(214, 158, 46, ${opacity})`,
-        `rgba(49, 151, 149, ${opacity})`,
-        `rgba(56, 161, 105, ${opacity})`,
-        `rgba(213, 63, 140, ${opacity})`,
-        `rgba(128, 90, 213, ${opacity})`,
-        `rgba(50, 38, 89, ${opacity})`,
-    ]
-
-    const bgContent = colors.at(dataOne.content + 0.25);
 
     const sortedAverageList = data.averageList.sort((a: any, b: any) => {
         if (a.createdAt < b.createdAt) {
@@ -61,29 +44,19 @@ export default function AverageSlug() {
     }
     ).reverse();
 
+    const tableHover = useColorModeValue("blackAlpha.100", "whiteAlpha.100")
+
     return (
-        <Layout>
-            <Flex flexDir={'row'} maxW='1400px' mx='auto'>
-                {/* nawigacjyny komonent */}
+        <Flex flexDir={'row'} maxW='1400px' mx='auto'>
+            {/* nawigacjyny komonent */}
+            <SubjectsAside slug={''} />
+            {/* main content */}
+            <Flex mt={5} flexDir={'column'}>
+                <Heading>Porównaj swoje średnie to średnich innych!</Heading>
 
-                <SubjectsAside slug={dataOne.subject} />
+                <Box overflowX={'auto'} overflow='auto'>
 
-                {/* main content */}
-                <Flex mt={5} flexDir={'column'} w={{ base: '100%', lg: '70%' }}>
-                    <Flex mb={20} flexDir={'row'}>
-                        <Flex flexDir={'column'} justifyContent='center' mx={'auto'} textAlign='center'>
-                            <Text>średnia tego przedmiotu to:</Text>
-                            <Box mt={1} bg={bgContent} rounded='lg'>
-                                <Heading fontSize={'6xl'}>
-                                    {dataOne.content}
-                                </Heading>
-                            </Box>
-                        </Flex>
-                        <Flex>
-                        </Flex>
-                    </Flex>
-
-
+                    <Heading mt={10} fontSize={'xl'}>Ostatnio dodane średnie: </Heading>
                     <TableContainer>
                         <Table size={'md'} whiteSpace='pre-wrap'>
                             <Thead>
@@ -95,7 +68,7 @@ export default function AverageSlug() {
                             </Thead>
                             <Tbody>
 
-                                {sortedAverageList.map((average: any) => {
+                                {sortedAverageList.map((average) => {
                                     const createdAtDate = new Date(average.createdAt);
                                     const createdAtMinutes = createdAtDate.getMinutes();
                                     const minutesDifference = timeNowMinutes - createdAtMinutes;
@@ -119,13 +92,10 @@ export default function AverageSlug() {
                                         diffrence = 'przed chwilą'
                                     }
 
-                                    console.log("timeNowHours: ", timeNowHours + " |  createdAtHours: ", createdAtHours)
-
                                     return (
-                                        <Tr key={average.id}>
-                                            <Th>{average.content}</Th>
-                                            {/* @ts-ignore */}
-                                            <Th ><ChakraLink _hover={'none'} as={Link} to={average.subject}>
+                                        <Tr _hover={{ bg: tableHover }} key={average.id}>
+                                            <Th>{average.content.toFixed(2)}</Th>
+                                            <Th ><ChakraLink _hover={{ textDecor: 'none' }} as={Link} to={`${average.subject}`}>
                                                 <chakra.span fontWeight={'100'} fontSize={'xx-small'}>{average.id}</chakra.span> {average.subjectName}</ChakraLink></Th>
                                             <Th>{diffrence}</Th>
                                         </Tr>
@@ -137,10 +107,10 @@ export default function AverageSlug() {
 
                         </Table>
                     </TableContainer>
-
-
-                </Flex>
+                </Box>
             </Flex>
-        </Layout>
-    );
+        </Flex>
+    )
 }
+
+export default Index

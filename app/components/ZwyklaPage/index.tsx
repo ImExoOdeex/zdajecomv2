@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react'
-import { Flex, Heading, Link as ChakraLink, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, HStack, useNumberInput, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem, Divider, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, FormControl, VisuallyHiddenInput, Select } from '@chakra-ui/react';
-import { motion, isValidMotionProp, AnimateSharedLayout, AnimatePresence } from 'framer-motion';
+import { Flex, Heading, Link as ChakraLink, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem, Divider, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, VisuallyHiddenInput, Select } from '@chakra-ui/react';
+import { motion, isValidMotionProp, LayoutGroup, AnimatePresence } from 'framer-motion';
 import { Form, Link, useTransition } from '@remix-run/react';
 import { v4 as uuidv4 } from "uuid";
 import Phonebottom from '../Phonebottom';
-import { typeCookie } from './../Cookies';
 import { SettingsIcon } from '@chakra-ui/icons';
 import subjects from './../../utils/subjects.json'
 
@@ -166,7 +165,6 @@ const Index = (props: Props) => {
     //card wrap
     const wrapW = ['100%', 'calc(40% - 20px)', 'calc(40% - 48px)'];
 
-
     const formatMaxPercentGrade = (maxPercentGrade: number) => maxPercentGrade + `%`
     const formatMinPercentGrade = (minPercentGrade: number) => minPercentGrade + `%`
 
@@ -198,8 +196,7 @@ const Index = (props: Props) => {
 
                 <Flex alignItems={'center'}>
                     <Button px='0'
-                        //@ts-ignore
-                        onClick={() => setSettingsScreenVisible(!isSettingsScreenVisible)} mr={2} h='25px' transform="auto" _hover={{ bg: 'transparent', rotate: '45deg' }} _focus={'none'} _active='none' bg='transparent' >
+                        onClick={() => setSettingsScreenVisible(!isSettingsScreenVisible)} mr={2} h='25px' transform="auto" _hover={{ bg: 'transparent', rotate: '45deg' }} _focus={{ bg: '' }} _active={{ bg: '' }} bg='transparent' >
                         <SettingsIcon w='100%' h='25px' />
                     </Button>
                 </Flex>
@@ -285,7 +282,7 @@ const Index = (props: Props) => {
             }
 
             <Box maxW={'1200px'} w='100%' mx='auto'>
-                <AnimateSharedLayout>
+                <LayoutGroup>
                     <Flex as={motion.div} layout flexDir={'column'} border='0px solid' rounded={'sm'} p={[2, 2, 4]}>
                         <AnimatePresence exitBeforeEnter={false}>
 
@@ -365,7 +362,6 @@ const Index = (props: Props) => {
                                                 } else {
                                                     setNewGrade(e.target.value);
                                                 }
-
                                                 if (e.target.value.includes(',')) {
                                                     setNewGrade(e.target.value.replace(',', '.'));
                                                 }
@@ -384,14 +380,18 @@ const Index = (props: Props) => {
                             <Text as={motion.p} layout>Twoja średnia to:</Text>
                             <ChakraHeading layout fontSize={'4xl'} fontFamily='Montserrat'>{average ?
                                 <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}</ChakraHeading>
-                            {average ?
-                                <Flex as={motion.div} layout flexDir={'row'} alignItems='center'>
+
+
+                            <Flex mt={3} as={motion.div} layout flexDir={'row'} alignItems='center'>
+                                <Flex flexDir={'column'}>
+                                    <Text fontSize={'xs'} textAlign='center'>Obliczyłeś już swoją średnią?</Text>
                                     <Text mr={2}>Wyślij swoją średnią do bazy</Text>
-                                    <Button onClick={onOpen} bg={useColorModeValue("brand.900", "brand.100")}>
-                                        <svg width="24px" viewBox="0 0 32 32"><title /><g data-name="Layer 10" id="Layer_10"><path fill='white' d="M28.7,14.23,4.43,2.1A2,2,0,0,0,1.65,4.41L5,16,1.65,27.59a2,2,0,0,0,1.89,2.53,1.92,1.92,0,0,0,.89-.22h0L28.7,17.77a2,2,0,0,0,0-3.54Z" /></g></svg>
-                                    </Button>
                                 </Flex>
-                                : null}
+                                <Button onClick={onOpen} bg={'brand.900'} disabled={average ? false : true}>
+                                    <svg width="24px" viewBox="0 0 32 32"><title /><g data-name="Layer 10" id="Layer_10"><path fill='white' d="M28.7,14.23,4.43,2.1A2,2,0,0,0,1.65,4.41L5,16,1.65,27.59a2,2,0,0,0,1.89,2.53,1.92,1.92,0,0,0,.89-.22h0L28.7,17.77a2,2,0,0,0,0-3.54Z" /></g></svg>
+                                </Button>
+                            </Flex>
+
 
                             <Modal motionPreset='scale' isOpen={isOpen} size='xl' onClose={onClose} isCentered>
                                 <ModalOverlay />
@@ -451,7 +451,7 @@ const Index = (props: Props) => {
 
                     </Wrap>
 
-                </AnimateSharedLayout >
+                </LayoutGroup>
             </Box>
 
             <Phonebottom average={average} type={type} />

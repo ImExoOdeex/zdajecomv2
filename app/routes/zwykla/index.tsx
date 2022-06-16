@@ -1,9 +1,7 @@
 import Layout from '~/components/Layout'
-import { ActionFunction, json, LinksFunction, LoaderFunction, MetaFunction, redirect } from '@remix-run/node';
-import React, { useState, useEffect } from 'react';
+import { ActionFunction, redirect } from '@remix-run/node';
 import Index from '../../components/ZwyklaPage/index';
 import { db } from '~/utils/db.server';
-import { useToast } from '@chakra-ui/react';
 
 export const action: ActionFunction = async ({ request }) => {
     const form = await request.formData();

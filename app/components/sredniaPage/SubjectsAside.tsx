@@ -22,7 +22,7 @@ function SubjectsAside({ slug }: Props) {
     const color = useColorModeValue("rgb(143, 79, 211)", "brand.100")
 
     return (
-        <Flex as={'aside'} mr={5} mt={10} flexDir={'column'} display={{ base: 'none', lg: 'flex' }} w='300px' justifyContent={'center'}>
+        <Flex as={'aside'} mr={5} mt={10} flexDir={'column'} display={{ base: 'none', lg: 'flex' }} w='300px'>
             <Text color={useColorModeValue("brand.900", "brand.100")} fontSize='lg' fontWeight='bold' mb='2'>
                 Przedmioty
             </Text>

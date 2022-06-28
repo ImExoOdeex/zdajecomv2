@@ -6,7 +6,7 @@ type Props = {}
 
 const Footer = (props: Props) => {
     return (
-        <Box h={'auto'} as='footer' mb={20} mt={'auto'} alignItems={'center'}>
+        <Box h={'auto'} as='footer' mb={{ base: 20, md: 2 }} mt={'auto'} alignItems={'center'}>
             <Text mx={'auto'} alignItems={'center'} w={'100%'} fontSize={'sm'} letterSpacing='1px' fontWeight='extrabold' fontStyle={'italic'}
                 textAlign='center'>Made with
 

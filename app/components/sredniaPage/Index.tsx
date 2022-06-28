@@ -1,62 +1,49 @@
-import * as React from 'react';
-import { Heading, Flex, Link as ChakraLink, Box, Table, TableContainer, Tbody, Thead, Tr, Th, chakra, useColorModeValue } from '@chakra-ui/react';
+import { Heading, Flex, Link as ChakraLink, Box, Table, TableContainer, Tbody, Thead, Tr, Th, useColorModeValue, Text, Tooltip, VisuallyHidden } from '@chakra-ui/react';
 import { Link } from '@remix-run/react';
-import { db } from "~/utils/db.server";
-import type { LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import SubjectsAside from '~/components/sredniaPage/SubjectsAside';
+import TimeAgo from 'javascript-time-ago'
+import pl from 'javascript-time-ago/locale/pl.json'
+import ReactTimeAgo from 'react-time-ago';
+
+TimeAgo.addDefaultLocale(pl)
 
 type LoaderData = {
     averageList: Array<{ content: Number, subject: String, subjectName: String, id: number, createdAt: Date }>;
 };
 
-export const loader: LoaderFunction = async () => {
-    const data: LoaderData = {
-        averageList: await db.average.findMany({
-            // take 20 latest records
-            take: 20,
-            // order by incrementing id
-            orderBy: {
-                id: 'desc'
-            }
-        }),
-    };
-    return json(data);
-};
-
 function Index() {
-    const data = useLoaderData<LoaderData>();
-    const newDate: any = new Date();
-    const timeNowMinutes: number = newDate.getMinutes();
-    const timeNowHours: number = newDate.getHours();
-    const timeNowDays: number = newDate.getDay();
+    const { data, dataOne }: any = useLoaderData<LoaderData>();
 
-
+    //sort list by id
     const sortedAverageList = data.averageList.sort((a: any, b: any) => {
-        if (a.createdAt < b.createdAt) {
+        if (a.id < b.id) {
             return -1;
         }
-        if (a.createdAt > b.createdAt) {
+        if (a.id > b.id) {
             return 1;
         }
         return 0;
     }
-    ).reverse();
+    ).reverse()
 
     const tableHover = useColorModeValue("blackAlpha.100", "whiteAlpha.100")
 
     return (
-        <Flex flexDir={'row'} maxW='1400px' mx='auto'>
+        <Flex flexDir={'row'} maxW='1500px' mx='auto'>
             {/* nawigacjyny komonent */}
+            {/* @ts-ignore */}
             <SubjectsAside slug={''} />
             {/* main content */}
             <Flex mt={5} flexDir={'column'}>
-                <Heading>Porównaj swoje średnie to średnich innych!</Heading>
+                <Box mx={2}>
+                    <Heading>Porównaj swoją średnią do średnich innych!</Heading>
+                    <Text>Dodano już {dataOne.id} średnich!</Text>
+                </Box>
 
-                <Box overflowX={'auto'} overflow='auto'>
+                <Box overflowX={'auto'} overflow='auto' w={['100vw', '100vw', '100%']}>
 
-                    <Heading mt={10} fontSize={'xl'}>Ostatnio dodane średnie: </Heading>
+                    <Heading mx={2} mt={10} fontSize={'xl'}>Ostatnio dodane średnie: </Heading>
                     <TableContainer>
                         <Table size={'md'} whiteSpace='pre-wrap'>
                             <Thead>
@@ -68,36 +55,17 @@ function Index() {
                             </Thead>
                             <Tbody>
 
-                                {sortedAverageList.map((average) => {
-                                    const createdAtDate = new Date(average.createdAt);
-                                    const createdAtMinutes = createdAtDate.getMinutes();
-                                    const minutesDifference = timeNowMinutes - createdAtMinutes;
-                                    const createdAtHours = createdAtDate.getHours();
-                                    const hoursDifference = timeNowHours - createdAtHours;
-                                    const createdAtDays = createdAtDate.getDay();
-                                    const daysDifference = timeNowDays - createdAtDays;
-                                    var diffrence = ''
+                                {sortedAverageList.map((average: any) => {
 
-                                    // make advanced diffrence date
-                                    if (daysDifference > 0) {
-                                        diffrence = daysDifference + ' dni'
-                                    }
-                                    if (hoursDifference > 0) {
-                                        diffrence = diffrence + ' ' + hoursDifference + ' godziny'
-                                    }
-                                    if (minutesDifference > 0) {
-                                        diffrence = diffrence + ' ' + minutesDifference + ' minut'
-                                    }
-                                    if (daysDifference === 0 && hoursDifference === 0 && minutesDifference === 0) {
-                                        diffrence = 'przed chwilą'
-                                    }
 
                                     return (
-                                        <Tr _hover={{ bg: tableHover }} key={average.id}>
+                                        <Tr _hover={{ bg: tableHover, transition: '.1s' }} transition='.1s' key={average.id}>
                                             <Th>{average.content.toFixed(2)}</Th>
                                             <Th ><ChakraLink _hover={{ textDecor: 'none' }} as={Link} to={`${average.subject}`}>
-                                                <chakra.span fontWeight={'100'} fontSize={'xx-small'}>{average.id}</chakra.span> {average.subjectName}</ChakraLink></Th>
-                                            <Th>{diffrence}</Th>
+                                                {average.subjectName}</ChakraLink></Th>
+                                            <Th>
+                                                <ReactTimeAgo date={average.createdAt} />
+                                            </Th>
                                         </Tr>
                                     )
                                 }

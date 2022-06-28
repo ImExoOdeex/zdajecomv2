@@ -5,7 +5,7 @@ import { Dict } from '@chakra-ui/utils'
 
 const config: ThemeConfig = {
     initialColorMode: 'dark',
-    useSystemColorMode: false,
+    useSystemColorMode: true,
 }
 
 const styles = {
@@ -13,13 +13,16 @@ const styles = {
         body: {
             minH: '100vh',
             bg: mode('bg.100', 'bg.900')(props)
+        },
+        th: {
+            color: mode("#393942cc!important", "#dedef1be!important")(props),
         }
     })
 }
 
 const colors = {
     brand: {
-        100: '#bb83f7',
+        100: '#a263e6',
         900: '#8F4FD3',
     },
     sec: {
@@ -32,12 +35,10 @@ const colors = {
 }
 const theme = extendTheme({
     colors, config, styles,
-
     fonts: {
         body: `"Poppins", sans-serif`,
         heading: `"Montserrat", sans-serif`,
-    }
-
+    },
 })
 
 export default theme

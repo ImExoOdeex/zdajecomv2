@@ -10,5 +10,81 @@
     {
         "name": "Język angielski",
         "slug": "jezyk-angielski"
+    },
+    {
+        "name": "Geografia",
+        "slug": "geografia"
+    },
+    {
+        "name": "Historia",
+        "slug": "historia"
+    },
+    {
+        "name": "Fizyka",
+        "slug": "fizyka"
+    },
+    {
+        "name": "Informatyka",
+        "slug": "informatyka"
+    },
+    {
+        "name": "Wychowanie fizyczne",
+        "slug": "wf"
+    },
+    {
+        "name": "Język niemiecki",
+        "slug": "jezyk-niemiecki"
+    },
+    {
+        "name": "Biologia",
+        "slug": "biologia"
+    },
+    {
+        "name": "Chemia",
+        "slug": "chemia"
+    },
+    {
+        "name": "BHP",
+        "slug": "bhp"
+    },
+    {
+        "name": "Filozofia",
+        "slug": "filozofia"
+    },
+    {
+        "name": "Religia",
+        "slug": "religia"
+    },
+    {
+        "name": "Strony internetowe",
+        "slug": "strony-internetowe"
+    },
+    {
+        "name": "Programowanie obiektowe",
+        "slug": "programowanie-obiektowe"
+    },
+    {
+        "name": "Informatyka zawodowa",
+        "slug": "informatyka-zawodowa"
+    },
+    {
+        "name": "Przygotowanie systemu operacyjnego do pracy",
+        "slug": "psodp"
+    },
+    {
+        "name": "Angielski rozszerzony",
+        "slug": "angielski-rozszerzony"
+    },
+    {
+        "name": "Informatyka rozszerzona",
+        "slug": "informatyka-rozszerzona"
+    },
+    {
+        "name": "Fizyka rozszerzona",
+        "slug": "fizyka-rozszerzona"
+    },
+    {
+        "name": "Bazy danych",
+        "slug": "bd"
     }
 ]

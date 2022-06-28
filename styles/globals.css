@@ -1,0 +1,50 @@
+html {
+    scroll-behavior: smooth;
+}
+
+html::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+html::-webkit-scrollbar-thumb {
+    background-color: #353535;
+    border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+    background-color: #8F4FD3;
+}
+
+html::-webkit-scrollbar-track {
+    background-color: #18181a;
+}
+
+html::-webkit-scrollbar-track:hover {
+    background-color: #18181a;
+}
+
+::selection {
+    background-color: #8F4FD3;
+}
+
+/* subjects aside scrollbar customization */
+#subjects-aside::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+#subjects-aside::-webkit-scrollbar-thumb {
+    background-color: #353535;
+    border-radius: 10px;
+}
+
+#subjects-aside::-webkit-scrollbar-thumb:hover {
+    background-color: #8F4FD3;
+}
+
+#subjects-aside::-webkit-scrollbar-track {
+    background-color: #18181a;
+}
+
+#subjects-aside::-webkit-scrollbar-track:hover {
+    background-color: #18181a;
+}

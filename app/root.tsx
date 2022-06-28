@@ -1,22 +1,20 @@
 import React, { useContext, useEffect } from 'react'
 import { withEmotionCache } from '@emotion/react'
-import { ChakraProvider, ColorModeScript, Switch } from '@chakra-ui/react'
+import { chakra, ChakraProvider, ColorModeScript } from '@chakra-ui/react'
 import {
   Links,
   LiveReload,
   Meta,
-  Outlet,
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
-import { useOutlet } from 'react-router-dom'
-import { MetaFunction, LinksFunction } from '@remix-run/node' // Depends on the runtime you choose
+import { useLocation, useOutlet } from 'react-router-dom'
+import { MetaFunction, LinksFunction } from '@remix-run/node'
 import { ServerStyleContext, ClientStyleContext } from './context'
 import theme from './components/chakra/theme';
 import Fonts from './components/chakra/Fonts'
 import { AnimatePresence, motion } from 'framer-motion'
-import { RemixRoute } from '@remix-run/react/components'
-import { useLocation } from 'react-router-dom';
+import globalCSS from '../styles/globals.css'
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
@@ -32,6 +30,10 @@ export let links: LinksFunction = () => {
       rel: 'stylesheet',
       href: 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap'
     },
+    {
+      rel: "stylesheet",
+      href: globalCSS
+    }
   ]
 }
 
@@ -89,9 +91,11 @@ export default function App() {
     <Document>
       <ChakraProvider theme={theme}>
         <AnimatePresence exitBeforeEnter>
-          <motion.main style={{ minHeight: '90vh' }} key={useLocation().pathname} exit={{ transition: { duration: 0 } }}>
+          {/* <motion.main key={useLocation().pathname}> */}
+          <chakra.main minH='90vh'>
             {outlet}
-          </motion.main>
+          </chakra.main>
+          {/* </motion.main> */}
         </AnimatePresence>
         <Fonts />
       </ChakraProvider>

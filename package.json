@@ -20,9 +20,12 @@
     "@remix-run/react": "^1.5.1",
     "@remix-run/serve": "^1.5.1",
     "framer-motion": "^6.3.11",
+    "invariant": "^2.2.4",
     "react": "^18.1.0",
+    "react-cookie": "^4.1.1",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
+    "react-time-ago": "^7.2.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

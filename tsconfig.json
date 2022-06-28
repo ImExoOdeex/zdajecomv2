@@ -3,7 +3,8 @@
     "remix.env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "app/components/chakra/Fonts.js"
+    "app/components/chakra/Fonts.js",
+    "app/components/chakra/Chakra.js"
   ],
   "compilerOptions": {
     "lib": [

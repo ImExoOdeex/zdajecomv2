@@ -1,12 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react'
 import { Flex, Heading, Link as ChakraLink, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem, Divider, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, VisuallyHiddenInput, Select, Badge } from '@chakra-ui/react';
-import { motion, isValidMotionProp, LayoutGroup, AnimatePresence } from 'framer-motion';
+import { motion, isValidMotionProp, LayoutGroup } from 'framer-motion';
 import { Form, Link, useActionData, useTransition } from '@remix-run/react';
 import { v4 as uuidv4 } from "uuid";
 import Phonebottom from '../Phonebottom';
 import { SettingsIcon } from '@chakra-ui/icons';
 import subjects from './../../utils/subjects.json'
+import AveragesUpBox from '../averagesUpBox';
+import Reset from '../reset';
 
 type Props = {}
 
@@ -15,6 +17,7 @@ const ChakraBox = chakra(motion.div, {
 });
 
 const Index = (props: Props) => {
+
 
     const ChakraHeading = chakra(motion.h3, {
         shouldForwardProp: (prop) => isValidMotionProp(prop) || prop === 'children',
@@ -54,7 +57,7 @@ const Index = (props: Props) => {
     const [average, setAverage] = useState(0);
     const [newGrade, setNewGrade] = useState('');
     const [isVisible, setVisible] = useState(false);
-    const [isPlusMinusVisible, setPlusMinusVisible] = useState(false);
+    const [isPlusMinusVisible, setPlusMinusVisible] = useState(true);
     const [isSettingsScreenVisible, setSettingsScreenVisible] = useState(false);
     const [plusValue, setPlusValue] = useState(0.50);
     const [minusValue, setMinusValue] = useState(0.25);
@@ -64,12 +67,12 @@ const Index = (props: Props) => {
     const [minPercentGrade, setMinPercentGrade] = useState(0);
 
     useEffect(() => {
-        if (type == TYPES.GRADES) {
+        if (type === TYPES.GRADES) {
             setPlusMinusVisible(true);
         } else {
             setPlusMinusVisible(false);
         }
-    }, [type, TYPES]);
+    }, [type, TYPES])
 
     function reset() {
         setGrades([]);
@@ -147,11 +150,12 @@ const Index = (props: Props) => {
     };
 
     useEffect(() => {
+
         const sum = grades.map(({ value }) => value).reduce((a, b) => +a + +b, 0)
         setAverage(sum / grades.length);
         setVisible(grades.length >= 1 ? true : false);
-    }, [grades]);
 
+    }, [grades]);
 
     //colors 
     const bgHoverTypes = useColorModeValue("rgba(0,0,0,0.2)", "rgba(255,255,255,0.2)")
@@ -189,16 +193,24 @@ const Index = (props: Props) => {
     const formatMinPercentGrade = (minPercentGrade: number) => minPercentGrade + `%`
 
     const { isOpen, onOpen, onClose } = useDisclosure()
-
     const { state } = useTransition();
-
-    // useEffect(() => {
-    //     if (state == 'idle') {
-    //         onClose();
-    //     }
-    // }, [state])
-
     const errors = useActionData()
+
+
+
+    const gradesColor = (grade: number) => {
+        if (type == TYPES.GRADES) {
+            const gradePercent = (grade / maxGrade * 100);
+            const color = (Math.floor(gradePercent / 20) + 1)
+            return colors[color]
+        } else if (type == TYPES.PERCENT) {
+            const gradePercent = grade / maxPercentGrade * 100;
+            console.log(Math.floor(gradePercent / 20) + 1)
+            return colors[Math.floor(gradePercent / 20) + 0.95]
+        }
+    }
+
+
 
     return (
         <Flex
@@ -217,8 +229,10 @@ const Index = (props: Props) => {
                 </Flex>
 
                 <Flex alignItems={'center'}>
+                    <Reset reset={reset} grades={grades} />
                     <Button px='0'
-                        onClick={() => setSettingsScreenVisible(!isSettingsScreenVisible)} mr={2} h='25px' transform="auto" _hover={{ bg: 'transparent', rotate: '45deg' }} _focus={{ bg: '' }} _active={{ bg: '' }} bg='transparent' >
+                        onClick={() => setSettingsScreenVisible(!isSettingsScreenVisible)} mr={2} h='25px' transform="auto" _hover={{ bg: 'transparent', rotate: '45deg' }}
+                        _focus={{ bg: '' }} _active={{ bg: '' }} bg='transparent' >
                         <SettingsIcon w='100%' h='25px' />
                     </Button>
                 </Flex>
@@ -305,37 +319,8 @@ const Index = (props: Props) => {
 
             <Box maxW={'1200px'} w='100%' mx='auto'>
                 <LayoutGroup>
-                    <Flex as={motion.div} layout flexDir={'column'} border='0px solid' rounded={'sm'} p={[2, 2, 4]}>
-                        <AnimatePresence exitBeforeEnter={false}>
 
-                            {isPlusMinusVisible ?
-                                <Box flexDir={'row'}
-                                // layout exit={{ opacity: 0, transition: { duration: .15 } }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { type: 'tween' } }}
-                                >
-                                    <Heading layout as={motion.h1} fontSize={'3xl'} fontWeight='extrabold'>Jak dodać ocenę z ' + ' lub ' - ' ?</Heading>
-                                    <Text as={motion.p} layout color={useColorModeValue("blackAlpha.800", "whiteAlpha.800")} alignItems={'center'} fontWeight={'500'}>
-                                        Aby dodać ocenę cząstkową (czyli taką,
-                                        która zawiera - lub +), wystarczy wpisać swoją ocenę w pole, a kalkulator sam przeliczy + lub - na
-                                        podane obok wartości tych cząteczek. Pamiętaj, by dopasować wartość + i - (klikając ikonę ustawień) do takiej liczby, jaka używa twoja szkoła - przeważnie jest to
-                                        -0.25 dla minusa i 0.50 dla plusa. </Text>
-                                </Box>
-                                :
-                                <Box flexDir={'row'}
-                                //  layout exit={{ opacity: 0, transition: { duration: .15 } }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { type: 'tween' } }}
-                                >
-                                    <Heading layout as={motion.h1} fontSize={'3xl'} fontWeight='extrabold'>Jak dodać oceny procentowe?</Heading>
-                                    <Box>
-                                        <Text as={motion.p} layout color={useColorModeValue("blackAlpha.800", "whiteAlpha.800")} alignItems={'center'} fontWeight={'500'}>
-                                            W pole do wpisywania ocen należy wpisać swoją ocenę. Można wpiać ocenę z % na końcu, albo bez - wszystko należy od własnych preferencji.
-                                        </Text>
-                                    </Box>
-                                </Box>
-                            }
-                        </AnimatePresence>
-
-
-                    </Flex>
-
+                    <AveragesUpBox isPlusMinusVisible={isPlusMinusVisible} />
 
                     <Wrap mt={5} spacing={[5, 10, 15]} justify='center' as={motion.ul} layout>
 
@@ -349,13 +334,10 @@ const Index = (props: Props) => {
                                     return (
                                         <>
                                             <Tooltip key={g.id} hasArrow label={"usuń: " + g.value}>
-                                                <Box borderTop={'2px solid'} borderColor={colors.at(g.value)} as={motion.span} initial={{ opacity: 0 }}
+                                                <Box borderTop={'2px solid'} borderColor={gradesColor(g.value)} as={motion.span} initial={{ opacity: 0 }}
                                                     animate={{ opacity: 1, transition: { duration: 0.1 } }}
                                                     whileHover={{ opacity: 0.8 }} onClick={() => deleteGrade(i)} cursor='pointer'
                                                     _after={type == TYPES.PERCENT ? { content: `'%'` } : { content: `''` }}
-
-                                                    shadow={g.value < minGrade || g.value > 5 ? '0px 0px 0px 1px rgba(255,0,0,0.5)' : 'none'}
-
                                                 >
                                                     {g.value}
                                                 </Box>
@@ -426,7 +408,6 @@ const Index = (props: Props) => {
                                 </Tooltip>
 
                             </Flex>
-
 
                             <Modal motionPreset='scale' isOpen={isOpen} size='xl' onClose={onClose} isCentered>
                                 <ModalOverlay />
@@ -499,7 +480,7 @@ const Index = (props: Props) => {
                                             <Flex as={'footer'} mb={2} mt={10} flexDir={'row'} justifyContent='space-between'>
                                                 <Flex flexDir={'row'} alignItems='center'>
                                                     <chakra.input sx={{ accentColor: '#D53F8C' }} disabled={type == TYPES.GRADES ? false : true} bg={'white'} color='white' required type={'checkbox'} mr={2} w='20px' h='20px' />
-                                                    <Text w={{ base: '100%', lg: '60%' }} fontSize={'sm'}>Akceptuję <ChakraLink color={useColorModeValue("brand.100", "brand.900")} as={Link} to="/regulamin">regulamin </ChakraLink>
+                                                    <Text w={{ base: '80%', lg: '60%' }} fontSize={'sm'}>Akceptuję <ChakraLink color={useColorModeValue("brand.100", "brand.900")} as={Link} to="/regulamin">regulamin </ChakraLink>
                                                         oraz <ChakraLink color={useColorModeValue("brand.100", "brand.900")} as={Link} to="/regulamin/zasady-wysylania-srednich-do-bazy">zasady
                                                             uczuciwego wysyłania średniej </ChakraLink> </Text>
                                                 </Flex>

@@ -4,7 +4,7 @@ import { mode, StyleFunctionProps } from '@chakra-ui/theme-tools'
 import { Dict } from '@chakra-ui/utils'
 
 const config: ThemeConfig = {
-    initialColorMode: 'dark',
+    initialColorMode: 'system',
     useSystemColorMode: true,
 }
 
@@ -16,7 +16,10 @@ const styles = {
         },
         th: {
             color: mode("#393942cc!important", "#dedef1be!important")(props),
-        }
+        },
+        // input: {
+        //     borderRadius: '3px !important',
+        // }
     })
 }
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-lone-blocks */
 import Layout from '~/components/Layout'
-import { ActionFunction, json, redirect } from '@remix-run/node';
+import { type ActionFunction, json, redirect } from '@remix-run/node';
 import Index from '../../components/ZwyklaPage/index';
 import { db } from '~/utils/db.server';
 import subjects from '../../utils/subjects.json'
@@ -15,7 +15,6 @@ export const action: ActionFunction = async ({ request }) => {
     let subjectName = form.get('subject');
     const errors = {};
     var valid = 0;
-
     {
         // eslint-disable-next-line array-callback-return
         subjects.map((s) => {
@@ -25,32 +24,25 @@ export const action: ActionFunction = async ({ request }) => {
             }
         })
     }
-
     if (valid == 0) {
         //@ts-ignore
         errors.valid = "Podaj właściwy przedmiot.";
     }
-
     if (typeof content !== 'number' || typeof subject !== 'string' || typeof subjectName !== 'string' || subject.length === 0 || subjectName.length === 0 ||
         content === null) {
         throw new Error(`Form not submitted correctly.`);
     }
-
     if (content < 1 || content > 6) {
         //@ts-ignore
         errors.content = "Średnia może wynosić liczbę tylko w przedziale od 1 do 6."
     }
-
     if (Object.keys(errors).length) {
         return json(errors, { status: 422 });
     }
-
     const session = await getSession(
         request.headers.get("Cookie")
     );
-
     session.flash("success", true)
-
     const fields = { content, subject, subjectName };
     await db.average.create({ data: fields });
     return redirect(`/srednie/${subject}`, {

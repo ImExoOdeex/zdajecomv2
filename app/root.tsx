@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { withEmotionCache } from '@emotion/react'
-import { chakra, ChakraProvider, ColorModeScript } from '@chakra-ui/react'
+import { chakra, ChakraProvider, ColorModeScript, cookieStorageManager, localStorageManager } from '@chakra-ui/react'
 import {
   Links,
   LiveReload,
@@ -8,8 +8,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
-import { useLocation, useOutlet } from 'react-router-dom'
-import { MetaFunction, LinksFunction } from '@remix-run/node'
+import { Outlet, useLocation, useOutlet } from 'react-router-dom'
+import { MetaFunction, LinksFunction, LoaderFunction } from '@remix-run/node'
 import { ServerStyleContext, ClientStyleContext } from './context'
 import theme from './components/chakra/theme';
 import Fonts from './components/chakra/Fonts'
@@ -72,9 +72,9 @@ const Document = withEmotionCache(
               dangerouslySetInnerHTML={{ __html: css }}
             />
           ))}
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
         </head>
         <body>
+          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
           {children}
           <ScrollRestoration />
           <Scripts />
@@ -85,15 +85,24 @@ const Document = withEmotionCache(
   }
 );
 
-export default function App() {
+export default function App({ cookies }: any) {
   const outlet = useOutlet();
+  const location = useLocation();
+
+  const colorModeManager =
+    typeof cookies === 'string'
+      // @ts-ignore
+      ? cookieStorageManager(cookies)
+      : localStorageManager
+
   return (
     <Document>
-      <ChakraProvider theme={theme}>
+      <ChakraProvider theme={theme} colorModeManager={colorModeManager}>
         <AnimatePresence exitBeforeEnter>
-          {/* <motion.main key={useLocation().pathname}> */}
+          {/* <motion.main key={location.pathname}> */}
           <chakra.main minH='90vh'>
             {outlet}
+            {/* <Outlet /> */}
           </chakra.main>
           {/* </motion.main> */}
         </AnimatePresence>
@@ -102,3 +111,13 @@ export default function App() {
     </Document>
   )
 }
+
+
+export const loader: LoaderFunction = async ({ request }) => {
+  return {
+    props: {
+      // @ts-ignore
+      cookies: request.headers.cookie ?? '',
+    },
+  }
+};

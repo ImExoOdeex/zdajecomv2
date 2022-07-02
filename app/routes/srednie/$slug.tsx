@@ -23,13 +23,10 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-
     const session = await getSession(
         request.headers.get("Cookie")
     );
-
     const success = session.get("success") || null;
-
     const data: LoaderData = {
         averageList: await db.average.findMany({
             take: 10,
@@ -56,7 +53,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
         }),
     };
     const dataOne = await db.average.findFirst({ where: { subject: `${params.slug}` } });
-
     return json({ data, dataOne, success },
         {
             headers: {

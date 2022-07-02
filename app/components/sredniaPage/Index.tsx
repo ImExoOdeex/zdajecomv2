@@ -13,7 +13,8 @@ type LoaderData = {
 };
 
 function Index() {
-    const { data, dataOne }: any = useLoaderData<LoaderData>();
+    // { data } = (useLoaderData() ?? {})
+    const { data, dataOne }: any = useLoaderData<LoaderData>() ?? {};
 
     //sort list by id
     const sortedAverageList = data.averageList.sort((a: any, b: any) => {

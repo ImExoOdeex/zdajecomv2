@@ -1,10 +1,11 @@
 import { MoonIcon, SunIcon, HamburgerIcon, Search2Icon, TriangleUpIcon, ChevronRightIcon, SmallCloseIcon } from "@chakra-ui/icons";
-import { chakra, Flex, IconButton, useColorModeValue, Text, useColorMode, Heading, Link as ChakraLink, HStack, Menu, MenuButton, MenuList, MenuItem, Button, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, InputGroup, InputLeftAddon, Input, Box, UnorderedList, ListItem } from "@chakra-ui/react";
-import { useLocation } from "react-router-dom";
+import { chakra, Flex, IconButton, useColorModeValue, Text, useColorMode, Heading, Link as ChakraLink, HStack, Menu, MenuButton, MenuList, MenuItem, Button, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, InputGroup, InputLeftAddon, Input, Box, UnorderedList, ListItem, Kbd } from "@chakra-ui/react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "@remix-run/react";
 import { motion, isValidMotionProp, LayoutGroup } from "framer-motion";
-import { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import subjects from '../utils/subjects.json'
+import { useHotkeys } from "react-hotkeys-hook";
 
 interface HeaderLinkProps {
   children: React.ReactNode;
@@ -29,6 +30,105 @@ function Header() {
   var count = 0;
   var notFound = false;
 
+
+  const useKeyPress = function (targetKey: any) {
+    const [keyPressed, setKeyPressed] = useState(false);
+
+    function downHandler({ key }: any) {
+      if (key === targetKey) {
+        setKeyPressed(true);
+      }
+    }
+
+    const upHandler = ({ key }: any) => {
+      if (key === targetKey) {
+        setKeyPressed(false);
+      }
+    };
+
+    useEffect(() => {
+      window.addEventListener("keydown", downHandler);
+      window.addEventListener("keyup", upHandler);
+
+      return () => {
+        window.removeEventListener("keydown", downHandler);
+        window.removeEventListener("keyup", upHandler);
+      };
+    });
+
+    return keyPressed;
+  };
+
+  const [selected, setSelected] = useState(undefined);
+  const downPress = useKeyPress("ArrowDown");
+  const upPress = useKeyPress("ArrowUp");
+  const enterPress = useKeyPress("Enter");
+  const [cursor, setCursor] = useState(0);
+  const [hovered, setHovered] = useState(undefined);
+
+  const items = subjects
+
+
+  //up and down arrow keypress
+
+  const onKeyDown = useCallback((e: React.KeyboardEvent) => {
+
+    switch (e.key) {
+      case 'ArrowDown': {
+        e.preventDefault()
+        setCursor(prevState =>
+          prevState < items.length - 1 ? prevState + 1 : prevState
+        );
+        break
+      }
+      case "ArrowUp": {
+        e.preventDefault()
+        setCursor(prevState =>
+          (prevState > 0 ? prevState - 1 : prevState)
+        );
+        break
+      }
+    }
+
+
+  }, [])
+
+
+
+
+
+  useEffect(() => {
+    if (items.length && enterPress && isOpen) {
+      setSelected(items[cursor]);
+    }
+  }, [cursor, enterPress]);
+  useEffect(() => {
+    if (items.length && hovered && isOpen) {
+      setCursor(items.indexOf(hovered));
+    }
+  }, [hovered]);
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (selected !== undefined) {
+      // @ts-ignore
+      // onClose()
+      // navigate(`/srednie/${selected.slug}`);
+    }
+  }, [selected]);
+
+
+  useHotkeys('ctrl+k', (e) => {
+    e.preventDefault();
+    if (isOpen) {
+      onClose()
+    } else {
+      onOpen()
+    }
+  });
+
+
   return (
     <Flex w={'100%'} h={{ base: '60px', md: '80px' }} as={'header'} bg={bg}>
       <Flex mx={'auto'} w={'1400px'} h='100%' alignItems={'center'} justify={{ base: 'center', md: 'space-between' }}>
@@ -42,6 +142,9 @@ function Header() {
           <Button onClick={onOpen} w='100%' flex={'1'} mr={5} display={{ base: 'none', md: 'flex' }}>
             <Search2Icon />
             <Text ml={4} opacity={.7}>Wyszukaj przedmiot</Text>
+            <Box pos={'absolute'} fontSize='12px' mt='60px'>
+              <Kbd rounded={'sm'} ml={2}>Ctrl</Kbd><Kbd rounded={'sm'} ml={0.5}>K</Kbd>
+            </Box>
           </Button>
 
           <HStack spacing={2} mr={5} fontWeight='extrabold' display={{ base: 'none', md: 'flex' }}>
@@ -112,16 +215,30 @@ function Header() {
               <Search2Icon mr={2} />
               <Input value={query} onChange={(e: any) => setQuery(e.target.value)} variant={'unstyled'} spellCheck={"false"}
                 maxLength={100} placeholder="Wyszukaj przedmiot" aria-autocomplete="list" autoComplete={"false"}
-                autoCorrect={"false"} />
+                autoCorrect={"false"}
+                onKeyDown={onKeyDown}
+              // onKeyUp={onKeyUp}
+              />
               {query &&
                 <SmallCloseIcon cursor={'pointer'} onClick={() => setQuery("")} />
               }
             </Flex>
 
+            <span>Selected: {selected ? selected.name : "none"}</span>
+            {/* {items.map((item, i) => (
+              <ListItemCustom
+                key={item.slug}
+                active={i === cursor}
+                item={item}
+                setSelected={setSelected}
+                setHovered={setHovered}
+              />
+            ))} */}
+
             {query &&
               <UnorderedList marginInlineStart={0} role={'listbox'} listStyleType={'none'} listStylePos={'outside'}>
                 {
-                  subjects.filter(
+                  items.filter(
                     (item: any) => {
                       if (query === "") {
                         count++;
@@ -136,14 +253,18 @@ function Header() {
                         notFound = false;
                       }
                     }
-                  ).map((item: any) => {
+                  ).map((item: any, i: any) => {
                     return (
-                      <ChakraLink key={item.slug} _focus={{ outline: '2px solid' }} _hover={{ textDecor: 'none' }} as={Link} to={`/srednie/${item.slug}`}>
+                      <ChakraLink
+                        key={item.slug} _focus={{ outline: '2px solid' }} _hover={{ textDecor: 'none' }} as={Link} to={`/srednie/${item.slug}`}>
                         <ListItem _focus={{ bg: 'brand.900' }} _selected={{ bg: 'brand.900' }} justifyContent={'space-between'} mt={2} px={5}
+                          onMouseEnter={() => setHovered(item)}
+                          onMouseLeave={() => setHovered(undefined)}
+                          onClick={() => setSelected(item)}
                           display={'flex'} flexDir='row' role={'option'} alignItems={'center'}
-                          _hover={{ bg: "brand.900" }} fontWeight='semibold' w='100%' h='75px'
+                          _hover={{ bg: "brand.900" }} fontWeight='semibold' w='100%' h='60px'
                           // eslint-disable-next-line react-hooks/rules-of-hooks
-                          bg={useColorModeValue("blackAlpha.100", "whiteAlpha.100")} mx='auto' rounded={'lg'} onClick={onClose}
+                          bg={i === cursor ? "brand.900" : useColorModeValue("blackAlpha.100", "whiteAlpha.100")} mx='auto' rounded={'lg'}
                         >
                           <Text mr={5}>
                             {item.name}

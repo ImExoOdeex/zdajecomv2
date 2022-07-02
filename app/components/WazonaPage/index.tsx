@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react'
-import { Flex, Heading, Link as ChakraLink, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem, Divider, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, VisuallyHiddenInput, Select, Badge } from '@chakra-ui/react';
+import { Flex, Heading, Link as ChakraLink, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem, Divider, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, VisuallyHiddenInput, Select, Badge, useColorMode, color } from '@chakra-ui/react';
 import { motion, isValidMotionProp, LayoutGroup, AnimatePresence } from 'framer-motion';
 import { Form, Link, useActionData, useTransition } from '@remix-run/react';
 import { v4 as uuidv4 } from "uuid";
 import Phonebottom from '../Phonebottom';
-import { ChevronDownIcon, SettingsIcon } from '@chakra-ui/icons';
+import { CheckIcon, ChevronDownIcon, SettingsIcon } from '@chakra-ui/icons';
 import subjects from './../../utils/subjects.json'
 import { useCookies } from 'react-cookie';
+import AveragesUpBox from '../averagesUpBox';
 
 type Props = {}
 
@@ -21,7 +22,6 @@ function GradesCard(props: any) {
     const wrapW = ['100%', 'calc(50% - 20px)', 'calc(50% - 48px)', 'calc(50% - 48px)', 'calc(33.333% - 48px)'];
     const key = props.cardKey || 0;
     const bg = useColorModeValue('blackAlpha.50', 'whiteAlpha.50');
-    const tealColor = useColorModeValue('teal.600', 'teal.200');
     const toast = useToast();
 
     function isInteger(str: any) {
@@ -92,7 +92,6 @@ function GradesCard(props: any) {
         'purple.500',
         'purple.900',
     ]
-    const borderColor = useColorModeValue('rgba(255,255,255, 0.1)', 'rgba(0,0,0, 0.1)');
     const grades = [
         1, 2, 3, 4, 5, 6
     ]
@@ -105,8 +104,10 @@ function GradesCard(props: any) {
     }, [props.grades])
 
     return (
-        <WrapItem display={'block'} w={wrapW} as={motion.div} layout boxShadow={'md'} bg={bg} p={5} rounded='md' border={'0px solid'} borderColor={tealColor}
-            justifyContent={'space-between'} alignItems='end'>
+        <WrapItem
+            display={'block'} w={wrapW} as={motion.li} layout boxShadow={'md'} p={5} borderTop={'1px  solid'} borderBottom={'1px  solid'}
+            justifyContent={'space-between'} alignItems='end' borderColor={'rgba(116, 116, 116, 0.432)'}>
+
             <Heading mb={2} as={motion.h3} layout textShadow={'sm'}>{props.heading}</Heading>
             <Flex as={motion.div} minH='37.5px'><Text fontSize={'25px'} as={motion.p}>
                 {props.grades.map((item: any) => {
@@ -167,6 +168,7 @@ function WeightsItem(props: any) {
         const input = event.target.children[0].children[0];
         const value = input.value;
         input.value = '';
+        input.focus();
         let weights = value.split(',');
         weights = weights.map((weight: any) => weight.trim());
         weights = weights.filter((weight: any) => weight && !isNaN(weight));
@@ -185,53 +187,43 @@ function WeightsItem(props: any) {
         }
         props.onSubmit(weights);
     }
-    const [isWeightsOpen, setisWeightsOpen] = useState(false);
-    const toggleOpen = () => setisWeightsOpen(!isWeightsOpen);
-    const tealColor = useColorModeValue('teal.600', 'teal.200');
     const toast = useToast()
 
-    const ChakraButton = chakra(motion.button, {
-        shouldForwardProp: (prop) => isValidMotionProp(prop) || prop === 'children',
-    })
     return (
         <Box as={motion.div} layout>
             {!props.isWeightsVisible ? (
-                <Flex mt={5} display={'block'} w={'100%'} as={motion.div} layout rounded='md'
-                    justifyContent={'space-between'} alignItems='end'>
-                    <Text>Podaj swoje wagi, które masz w szkole. Każda szkoła ma inne. Wpisz je po pojedynczo, a każdą oddziel przecinkiem.</Text>
-                    <form onSubmit={handleWeightsSubmit} noValidate>
-                        <Flex mt={5} flexDir={'row'}>
-                            <Input w={['100%', '75%', '30%']} type="text" name="weights" placeholder="1, 2, 3, 4, 5..." autoComplete="off" />
-                            <Button type="submit" ml={5} fontWeight='normal' rounded={'md'} bg='transparent' _hover={{ bg: 'rgba(246, 135, 179,0.75)' }}>Zatwierdź</Button>
-                        </Flex>
-                    </form>
+                <Flex flexDir={'column'} mx='auto'>
+                    <Box as={motion.div} layout mx={'auto'}>
+                        <Box mt={5} mb={5}>
+                            <Text>Zanim obliczysz swoją średnią ważoną musisz najrpiew dodać swoje wagi, które są używane w twojej szkole.</Text>
+                            <form onSubmit={handleWeightsSubmit} noValidate>
+                                <Flex mt={2} flexDir={['column', 'row']} as={motion.div} layout>
+                                    <Input variant={'flushed'} minW='250px' as={motion.input} layout w={['100%', '75%', '30%']} type="text" name="weights" placeholder="1, 2, 3, 4, 5..." autoComplete="off" />
+                                    <Button color={'white'} _hover={{ bg: 'brand.100' }} _active={{}} ml={[0, 5]} mt={[2, 0]} mx={['15%', '']}
+                                        as={motion.button} layout type="submit" fontWeight='semibold' rounded={'md'} bg='brand.900'
+                                    >Zatwierdź <CheckIcon ml={2} /> </Button>
+                                </Flex>
+                            </form>
+                        </Box>
+                    </Box>
                 </Flex>
             ) : (
-                <>
-                    <ChakraButton alignItems={'center'} rounded={'md'} layout _hover={{ bg: 'rgba(129, 230, 217, 0.1)' }} fontSize={'lg'} px={5} py={2}
-                        onTap={toggleOpen} color={tealColor} fontWeight='normal' bg={'transparent'} flexDir='row' display={'flex'}>
-                        <Text color={tealColor} ml={1}>Zmień wagi</Text>
-                        <ChevronDownIcon ml={1} rotate={isWeightsOpen ? 270 : 0} transitionProperty={'transform'} transitionDuration={'.2s'} transition="ease-in-out" transform='auto' />
-                    </ChakraButton>
-                    <AnimatePresence>
-                        {isWeightsOpen && (
-                            <Box as={motion.div} layout
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}>
-                                <form onSubmit={handleWeightsSubmit} noValidate>
-                                    <Flex mt={5} mb={5} flexDir={'row'} as={motion.div} layout>
-                                        <Input as={motion.input} layout w={['100%', '75%', '30%']} type="text" name="weights" placeholder="1, 2, 3, 4, 5..." autoComplete="off" />
-                                        <Button as={motion.button} layout type="submit" ml={5} fontWeight='normal' rounded={'md'} bg='transparent' _hover={{ bg: 'rgba(246, 135, 179,0.75)' }}>Zatwierdź</Button>
-                                    </Flex>
-                                </form>
-                            </Box>
-                        )}
-                    </AnimatePresence>
-                    <Text as={motion.p} layout>Aby usunąć ocenę, po prostu na nią kliknij</Text>
-                </>
-            )}
-        </Box>
+                <Flex flexDir={'column'} mx='auto'>
+                    <Box as={motion.div} layout mx={'auto'}>
+                        <Box mt={5} mb={5}>
+                            <Text>Zmiana wag:</Text>
+                            <form onSubmit={handleWeightsSubmit} noValidate>
+                                <Flex flexDir={'row'} as={motion.div} layout>
+                                    <Input variant={'flushed'} minW='250px' as={motion.input} layout w={['100%', '75%', '30%']} type="text" name="weights" placeholder="1, 2, 3, 4, 5..." autoComplete="off" />
+                                    <Button as={motion.button} layout type="submit" ml={5} fontWeight='normal' rounded={'md'} bg='transparent' _hover={{ bg: 'rgba(246, 135, 179,0.75)' }}>Zatwierdź</Button>
+                                </Flex>
+                            </form>
+                        </Box>
+                    </Box>
+                </Flex>
+            )
+            }
+        </Box >
     )
 }
 
@@ -276,6 +268,14 @@ function Index() {
     }
 
     useEffect(() => {
+        if (type === TYPES.GRADES) {
+            setPlusMinusVisible(true);
+        } else {
+            setPlusMinusVisible(false);
+        }
+    }, [type, TYPES])
+
+    useEffect(() => {
         const typeStorage = localStorage.getItem('type');
         if (typeStorage == "GRADES") {
             setType(TYPES.GRADES);
@@ -285,8 +285,7 @@ function Index() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const [isPlusMinusVisible, setPlusMinusVisible] = useState(false);
-    const [isSettingsScreenVisible, setSettingsScreenVisible] = useState(false);
+    const [isPlusMinusVisible, setPlusMinusVisible] = useState(true);
     const [plusValue, setPlusValue] = useState(0.50);
     const [minusValue, setMinusValue] = useState(0.25);
     const [maxGrade, setMaxGrade] = useState(6);
@@ -304,16 +303,22 @@ function Index() {
     const formatMaxPercentGrade = (maxPercentGrade: number) => maxPercentGrade + `%`
     const formatMinPercentGrade = (minPercentGrade: number) => minPercentGrade + `%`
 
-    const wrapW = ['100%', 'calc(50% - 20px)', 'calc(50% - 48px)', 'calc(50% - 48px)', 'calc(33.333% - 48px)'];
-    const bg = useColorModeValue('blackAlpha.50', 'whiteAlpha.50');
-    const tealColor = useColorModeValue('teal.600', 'teal.200');
-
     const [grades, setGrades] = useState({});
     const [gradeKey, setGradeKey] = useState(0);
     const [weights, setWeights] = useSavedWeights();
     const [average, setAverage] = useState();
 
+    const [isSettingsScreenVisible, setSettingsScreenVisible] = useState(false);
+    console.group('isSettingsScreenVisible')
+    console.log(isSettingsScreenVisible)
+    console.log(weights)
+    console.groupEnd()
     const [isWeightsVisible, setIsWeightsVisible] = useState(true);
+
+
+    useEffect(() => {
+        weights === undefined || weights === null ? setSettingsScreenVisible(true) : setSettingsScreenVisible(false);
+    }, [weights])
 
 
     useEffect(() => {
@@ -326,7 +331,7 @@ function Index() {
     useEffect(() => {
         setVisible(average ? true : false);
         setIsWeightsVisible(!weights ? false : true);
-    })
+    }, [average, weights])
 
     useEffect(() => {
         let numerator = 0;
@@ -408,84 +413,93 @@ function Index() {
 
                 <LayoutGroup>
 
+
                     {isSettingsScreenVisible &&
-                        <ChakraBox layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 1 } }}>
+                        <ChakraBox layout justifyContent={'center'} alignItems={'center'}
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 1 } }}>
                             <Divider mb={5} mt={3} />
-                            <Wrap spacingX={{ base: '10px', sm: '40px' }} spacingY={{ base: '30px', lg: 0 }} justify='center'>
+                            {isWeightsVisible && (
+                                <Wrap spacingX={{ base: '10px', sm: '40px' }} spacingY={{ base: '30px', lg: 0 }} justify='center'>
 
-                                <WrapItem>
-                                    <ChakraBox w={'100%'} layout flexDir={'column'}>
-                                        <Text>Wartość plusa: </Text>
-                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={plusValue} onChange={handlePlusChange}>
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
+                                    <WrapItem>
+                                        <ChakraBox w={'100%'} layout flexDir={'column'}>
+                                            <Text>Wartość plusa: </Text>
+                                            <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={plusValue} onChange={handlePlusChange}>
+                                                <NumberInputField />
+                                                <NumberInputStepper>
+                                                    <NumberIncrementStepper />
+                                                    <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                            </NumberInput>
 
-                                        <Text mt={2}>Wartość minusa: </Text>
-                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={minusValue} onChange={handleMinusChange}>
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
-                                    </ChakraBox>
-                                </WrapItem>
-                                {/* max i min grades */}
-                                <WrapItem>
-                                    <ChakraBox w={'100%'} layout flexDir={'column'}>
-                                        <Text>Maksymalna ocena: </Text>
-                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={maxGrade} onChange={handleMaxGradeChange}>
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
+                                            <Text mt={2}>Wartość minusa: </Text>
+                                            <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={minusValue} onChange={handleMinusChange}>
+                                                <NumberInputField />
+                                                <NumberInputStepper>
+                                                    <NumberIncrementStepper />
+                                                    <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                            </NumberInput>
+                                        </ChakraBox>
+                                    </WrapItem>
+                                    {/* max i min grades */}
+                                    <WrapItem>
+                                        <ChakraBox w={'100%'} layout flexDir={'column'}>
+                                            <Text>Maksymalna ocena: </Text>
+                                            <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={maxGrade} onChange={handleMaxGradeChange}>
+                                                <NumberInputField />
+                                                <NumberInputStepper>
+                                                    <NumberIncrementStepper />
+                                                    <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                            </NumberInput>
 
-                                        <Text mt={2}>Minimalna ocena: </Text>
-                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={minGrade} onChange={handleMinGradeChange}>
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
+                                            <Text mt={2}>Minimalna ocena: </Text>
+                                            <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={minGrade} onChange={handleMinGradeChange}>
+                                                <NumberInputField />
+                                                <NumberInputStepper>
+                                                    <NumberIncrementStepper />
+                                                    <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                            </NumberInput>
 
-                                    </ChakraBox>
-                                </WrapItem>
+                                        </ChakraBox>
+                                    </WrapItem>
 
-                                {/* max i min percent grades */}
-                                <WrapItem>
-                                    <ChakraBox w={'100%'} layout flexDir={'column'}>
-                                        <Text>Maksymalna ocena procentowa: </Text>
-                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={formatMaxPercentGrade(maxPercentGrade)} onChange={handleMaxPercentGradeChange}>
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
+                                    {/* max i min percent grades */}
+                                    <WrapItem>
+                                        <ChakraBox w={'100%'} layout flexDir={'column'}>
+                                            <Text>Maksymalna ocena procentowa: </Text>
+                                            <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={formatMaxPercentGrade(maxPercentGrade)} onChange={handleMaxPercentGradeChange}>
+                                                <NumberInputField />
+                                                <NumberInputStepper>
+                                                    <NumberIncrementStepper />
+                                                    <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                            </NumberInput>
 
-                                        <Text mt={2}>Minimalna ocena procentowa: </Text>
-                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={formatMinPercentGrade(minPercentGrade)} onChange={handleMinPercentGradeChange}>
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
+                                            <Text mt={2}>Minimalna ocena procentowa: </Text>
+                                            <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={formatMinPercentGrade(minPercentGrade)} onChange={handleMinPercentGradeChange}>
+                                                <NumberInputField />
+                                                <NumberInputStepper>
+                                                    <NumberIncrementStepper />
+                                                    <NumberDecrementStepper />
+                                                </NumberInputStepper>
+                                            </NumberInput>
 
-                                    </ChakraBox>
-                                </WrapItem>
+                                        </ChakraBox>
+                                    </WrapItem>
 
-                            </Wrap>
+                                </Wrap>
+                            )}
+
+                            <WeightsItem isWeightsVisible={isWeightsVisible} onSubmit={handleWeightsSubmit} />
+
                             <Divider mt={5} />
                         </ChakraBox>
                     }
+
+                    <AveragesUpBox isPlusMinusVisible={isPlusMinusVisible} />
 
                     <ChakraBox rounded={'md'} layout flexDir={'column'} p={5} w='100%' mx="auto" alignItems='center' justifyContent={'center'} justifyItems='center' textAlign='center'>
                         <Text as={motion.p} layout>Twoja średnia to:</Text>
@@ -493,14 +507,15 @@ function Index() {
                             <>{type == TYPES.GRADES ? Number(average).toFixed(2) : Number(average).toFixed(2) + '%'}</> : <>---</>}
                         </ChakraHeading>
 
-                        <Box alignItems={'center'} mt={3} as={motion.div} layout mx={'auto'}>
-                            <Flex flexDir={{ base: 'column', md: 'row' }} alignItems='center'>
-                                <Box whiteSpace='nowrap'>
+                        <Flex mx={'auto'} mt={3} as={motion.div} layout flexDir={'column'} alignItems='center'>
+                            <Flex flexDir={{ base: 'column', md: 'row' }}>
+
+                                <Flex flexDir={'column'} whiteSpace='nowrap'>
                                     <Text fontSize={'xs'} textAlign='center'>Obliczyłeś już swoją średnią?</Text>
                                     <Text mr={2}>Wyślij swoją średnią do bazy
                                         {/* <Badge colorScheme={'green'}>nowość!</Badge> */}
                                     </Text>
-                                </Box>
+                                </Flex>
                                 <Tooltip bg={useColorModeValue("bg.900", "bg.100")} hasArrow label='Uzupełnij średnią, zanim ją wyślesz' display={!average ? 'block' : 'none'} shouldWrapChildren>
                                     <Button color='whiteAlpha.900' _hover={{ bg: "rgb(121, 62, 185)" }} minW='100%' onClick={onOpen} bg={'brand.900'} mt={{ base: 2, md: 0 }}
                                         disabled={average ? false : true}
@@ -510,7 +525,8 @@ function Index() {
                                     </Button>
                                 </Tooltip>
                             </Flex>
-                        </Box>
+
+                        </Flex>
 
                         <Modal motionPreset='scale' isOpen={isOpen} size='xl' onClose={onClose} isCentered>
                             <ModalOverlay />
@@ -599,9 +615,6 @@ function Index() {
                     </ChakraBox>
 
                     <Wrap spacing={[5, 5, 12]} as={motion.ul} >
-                        <Box>
-                            <WeightsItem isWeightsVisible={isWeightsVisible} onSubmit={handleWeightsSubmit} />
-                        </Box>
 
                         {Object.keys(grades).map((weight) =>
                             <GradesCard

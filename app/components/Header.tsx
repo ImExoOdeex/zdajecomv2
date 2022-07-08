@@ -65,6 +65,7 @@ function Header() {
   const enterPress = useKeyPress("Enter");
   const [cursor, setCursor] = useState(0);
   const [hovered, setHovered] = useState(undefined);
+  const [filteredItems, setFilteredItems] = useState([]);
 
   const items = subjects
 
@@ -90,12 +91,7 @@ function Header() {
       }
     }
 
-
   }, [])
-
-
-
-
 
   useEffect(() => {
     if (items.length && enterPress && isOpen) {
@@ -108,8 +104,6 @@ function Header() {
     }
   }, [hovered]);
 
-  const navigate = useNavigate()
-
   useEffect(() => {
     if (selected !== undefined) {
       // @ts-ignore
@@ -121,11 +115,7 @@ function Header() {
 
   useHotkeys('ctrl+k', (e) => {
     e.preventDefault();
-    if (isOpen) {
-      onClose()
-    } else {
-      onOpen()
-    }
+    isOpen ? onClose() : onOpen();
   });
 
 
@@ -139,9 +129,12 @@ function Header() {
         </Flex>
         <Flex justifyContent={'flex-end'} alignItems={'center'} mr={2} w='65.2%' >
           {/* search bar */}
-          <Button onClick={onOpen} w='100%' flex={'1'} mr={5} display={{ base: 'none', md: 'flex' }}>
+          <Button onClick={onOpen} w='100%' flex={'1'} mr={5} display={{ base: 'none', md: 'flex' }}
+            bg={useColorModeValue("bg.100", "bg.900")}
+            shadow={`0px 2px 5px ${useColorModeValue("rgba(0, 0, 0, 0.2)", "rgba(0, 0, 0, 0.3)")}`}
+          >
             <Search2Icon />
-            <Text ml={4} opacity={.7}>Wyszukaj przedmiot</Text>
+            <Text ml={4} opacity={.7} noOfLines={1} whiteSpace='break-spaces'>Wyszukaj przedmiot</Text>
             <Box pos={'absolute'} fontSize='12px' mt='60px'>
               <Kbd rounded={'sm'} ml={2}>Ctrl</Kbd><Kbd rounded={'sm'} ml={0.5}>K</Kbd>
             </Box>
@@ -153,7 +146,7 @@ function Header() {
             <HeaderLink to={'/wazona'}>Ważona</HeaderLink>
             <HeaderLink to={'/srednie'}>Średnie</HeaderLink>
           </HStack>
-          <IconButton display={{ base: 'none', md: 'flex' }} bg={'transparent'} icon={colorMode == 'light' ? <MoonIcon /> : <SunIcon />} aria-label={'Toggle color mode'} onClick={toggleColorMode} />
+          <IconButton rounded={'xl'} display={{ base: 'none', md: 'flex' }} bg={'transparent'} icon={colorMode == 'light' ? <MoonIcon /> : <SunIcon />} aria-label={'Toggle color mode'} onClick={toggleColorMode} />
           <Button bg={'transparent'} onClick={onOpen} display={{ base: 'block', md: 'none' }}>
             <Search2Icon />
           </Button>
@@ -217,7 +210,6 @@ function Header() {
                 maxLength={100} placeholder="Wyszukaj przedmiot" aria-autocomplete="list" autoComplete={"false"}
                 autoCorrect={"false"}
                 onKeyDown={onKeyDown}
-              // onKeyUp={onKeyUp}
               />
               {query &&
                 <SmallCloseIcon cursor={'pointer'} onClick={() => setQuery("")} />
@@ -225,20 +217,12 @@ function Header() {
             </Flex>
 
             <span>Selected: {selected ? selected.name : "none"}</span>
-            {/* {items.map((item, i) => (
-              <ListItemCustom
-                key={item.slug}
-                active={i === cursor}
-                item={item}
-                setSelected={setSelected}
-                setHovered={setHovered}
-              />
-            ))} */}
 
             {query &&
               <UnorderedList marginInlineStart={0} role={'listbox'} listStyleType={'none'} listStylePos={'outside'}>
                 {
                   items.filter(
+                    // eslint-disable-next-line array-callback-return
                     (item: any) => {
                       if (query === "") {
                         count++;

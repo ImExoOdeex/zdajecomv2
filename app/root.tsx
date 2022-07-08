@@ -87,7 +87,6 @@ const Document = withEmotionCache(
 
 export default function App({ cookies }: any) {
   const outlet = useOutlet();
-  const location = useLocation();
 
   const colorModeManager =
     typeof cookies === 'string'
@@ -98,14 +97,11 @@ export default function App({ cookies }: any) {
   return (
     <Document>
       <ChakraProvider theme={theme} colorModeManager={colorModeManager}>
-        <AnimatePresence exitBeforeEnter>
-          {/* <motion.main key={location.pathname}> */}
-          <chakra.main minH='90vh'>
+        <chakra.main minH='90vh'>
+          <AnimatePresence exitBeforeEnter={true}>
             {outlet}
-            {/* <Outlet /> */}
-          </chakra.main>
-          {/* </motion.main> */}
-        </AnimatePresence>
+          </AnimatePresence>
+        </chakra.main>
         <Fonts />
       </ChakraProvider>
     </Document>

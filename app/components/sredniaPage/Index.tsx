@@ -1,4 +1,4 @@
-import { Heading, Flex, Link as ChakraLink, Box, Table, TableContainer, Tbody, Thead, Tr, Th, useColorModeValue, Text, Tooltip, VisuallyHidden } from '@chakra-ui/react';
+import { Heading, Flex, Link as ChakraLink, Box, Table, TableContainer, Tbody, Thead, Tr, Th, useColorModeValue, Text, chakra } from '@chakra-ui/react';
 import { Link } from '@remix-run/react';
 import { useLoaderData } from "@remix-run/react";
 import SubjectsAside from '~/components/sredniaPage/SubjectsAside';
@@ -16,6 +16,14 @@ function Index() {
     // { data } = (useLoaderData() ?? {})
     const { data, dataOne }: any = useLoaderData<LoaderData>() ?? {};
 
+    if (!data) {
+        return null;
+    }
+
+    if (!dataOne) {
+        return null;
+    }
+
     //sort list by id
     const sortedAverageList = data.averageList.sort((a: any, b: any) => {
         if (a.id < b.id) {
@@ -28,6 +36,7 @@ function Index() {
     }
     ).reverse()
 
+    //eslint-disable-next-line
     const tableHover = useColorModeValue("blackAlpha.100", "whiteAlpha.100")
 
     return (
@@ -39,7 +48,13 @@ function Index() {
             <Flex mt={5} flexDir={'column'}>
                 <Box mx={2}>
                     <Heading>Porównaj swoją średnią do średnich innych!</Heading>
-                    <Text>Dodano już {dataOne.id} średnich!</Text>
+
+                    <Text fontSize={'lg'} fontWeight={'bold'}>Dodano już
+                        {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
+                        <chakra.span color={useColorModeValue("brand.900", "brand.100")} textShadow='0px 0px 5px #6938c5'> {dataOne.id} </chakra.span>
+                        średnich!</Text>
+
+
                 </Box>
 
                 <Box overflowX={'auto'} overflow='auto' w={['100vw', '100vw', '100%']}>

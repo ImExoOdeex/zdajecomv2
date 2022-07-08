@@ -5,6 +5,8 @@ import Index from '../../components/ZwyklaPage/index';
 import { db } from '~/utils/db.server';
 import subjects from '../../utils/subjects.json'
 import { commitSession, getSession } from '../../utils/sessions'
+import { motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 
 export const action: ActionFunction = async ({ request }) => {
     const form = await request.formData();
@@ -52,14 +54,19 @@ export const action: ActionFunction = async ({ request }) => {
     });
 }
 
-function index() {
+export default function IndexPage() {
+
+    const location = useLocation();
+
     return (
-        <>
+        <motion.main key={location.key}
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1, transition: { type: 'tween', duration: .3 } }}
+            exit={{ y: 20, opacity: 0, transition: { duration: .15 } }}
+        >
             <Layout>
                 <Index />
             </Layout>
-        </>
+        </motion.main>
     )
 }
-
-export default index

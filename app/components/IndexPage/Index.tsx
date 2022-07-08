@@ -1,17 +1,11 @@
-import { Heading, Flex, chakra, Box, Link as ChakraLink, DarkMode, LightMode, Button, Text } from '@chakra-ui/react'
-import React from 'react'
-import { motion, isValidMotionProp } from 'framer-motion';
+import { Heading, Flex, chakra, Link as ChakraLink, Text } from '@chakra-ui/react'
+import { motion } from 'framer-motion';
 import { Link } from '@remix-run/react';
-import { Navigate, useNavigate } from 'react-router-dom';
 import { useColorModeValue } from '@chakra-ui/react';
 
 function Index() {
 
-    const ChakraBox = chakra(motion.div, {
-        shouldForwardProp: (prop) => isValidMotionProp(prop) || prop === 'children',
-    });
-
-    const resButton = ['80%', '60%', '75%', '75%']
+    const resButton = ['80%', '60%', '75%']
 
     return (
         <Flex h={'65vh'} flexDir={'column'}>
@@ -23,7 +17,7 @@ function Index() {
 
                     <motion.div whileHover={{ y: 7, cursor: 'pointer' }} style={{ width: '100%', display: 'flex', marginTop: '15px' }}>
                         <ChakraLink boxShadow={'md'} _hover={{ textDecor: 'none' }} textAlign={'center'} as={Link} to='/jak-obliczac' bg={'transparent'}
-                            rounded='md' w={resButton}
+                            rounded='md' w={resButton} borderColor={useColorModeValue('#00000094 !important', '#ffffff8b !important')}
                             alignItems={'center'} justifyContent='center' py={2.5} fontWeight='extrabold' mx='auto' border={'2px solid'}>Jak obliczyć?</ChakraLink>
                     </motion.div>
 

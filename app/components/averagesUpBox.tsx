@@ -8,10 +8,10 @@ function AveragesUpBox({ isPlusMinusVisible }: Props) {
     const textColor = useColorModeValue("blackAlpha.800", "whiteAlpha.800")
     return (
         <Flex as={motion.div} layout flexDir={'column'} border='0px solid' rounded={'sm'} p={[2, 2, 4]} mx='auto' maxW={'1200px'}>
-
+            {/* <AnimatePresence exitBeforeEnter> */}
             {isPlusMinusVisible ?
-                <Box flexDir={'row'}
-                // layout exit={{ opacity: 0, transition: { duration: .15 } }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { type: 'tween' } }}
+                <Box flexDir={'row'} as={motion.div}
+                // layout exit={{ opacity: 0, transition: { duration: 1 } }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { type: 'tween' } }}
                 >
                     <Heading layout as={motion.h1} fontSize={'3xl'} fontWeight='extrabold'>Jak dodać ocenę z ' + ' lub ' - ' ?</Heading>
                     {/* @ts-ignore */}
@@ -34,8 +34,7 @@ function AveragesUpBox({ isPlusMinusVisible }: Props) {
                     </Box>
                 </Box>
             }
-
-
+            {/* </AnimatePresence> */}
         </Flex>
 
     )

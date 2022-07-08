@@ -1,16 +1,13 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-lone-blocks */
-import { Flex, Heading, Link as ChakraLink, Text, Table, TableContainer, Tbody, Th, Thead, Tr, Box, Center, useColorModeValue, HStack, Stack, chakra } from "@chakra-ui/react";
+import { Flex, Heading, Text, Box, useColorModeValue, Stack, chakra } from "@chakra-ui/react";
 import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
-import { Link } from "react-router-dom";
 import Layout from "~/components/Layout";
 import { db } from "~/utils/db.server";
 import { useLoaderData } from "@remix-run/react";
 import SubjectsAside from "~/components/sredniaPage/SubjectsAside";
-import { useEffect, useState } from "react";
-import { commitSession, getSession } from "~/utils/sessions";
-import { CheckCircleIcon } from "@chakra-ui/icons";
+import { useEffect } from "react";
 
 type LoaderData = {
     averageList: Array<{ content: number, subject: String, subjectName: String, id: number, createdAt: Date }>;
@@ -25,7 +22,14 @@ export const loader: LoaderFunction = async ({ params }) => {
 }
 
 export default function AverageSlug() {
-    const { data } = useLoaderData();
+
+    let { data } = useLoaderData() ?? {};
+
+    if (!data) {
+        data = { content: 0 };
+    }
+
+    console.log(data);
     const opacity = .1;
     const colors = [
         `rgba(113, 128, 150, ${opacity})`,
@@ -62,6 +66,7 @@ export default function AverageSlug() {
         <Layout>
             <Flex flexDir={'row'} maxW='1500px' mx='auto'>
                 {/* nawigacjyny komonent */}
+                {/* @ts-ignore */}
                 <SubjectsAside slug={''} />
 
                 {/* main content */}

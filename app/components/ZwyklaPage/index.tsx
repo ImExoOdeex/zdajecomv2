@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react'
-import { Flex, Heading, Link as ChakraLink, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem, Divider, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, VisuallyHiddenInput, Select, Badge } from '@chakra-ui/react';
-import { motion, isValidMotionProp, LayoutGroup } from 'framer-motion';
+import { Flex, Heading, Link as ChakraLink, chakra, useColorModeValue, FormLabel, Input, Button, useToast, Box, Tooltip, Text, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Wrap, WrapItem, Divider, useDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, VisuallyHiddenInput, Select, Badge, Checkbox } from '@chakra-ui/react';
+import { motion, isValidMotionProp, LayoutGroup, AnimatePresence } from 'framer-motion';
 import { Form, Link, useActionData, useTransition } from '@remix-run/react';
 import { v4 as uuidv4 } from "uuid";
 import Phonebottom from '../Phonebottom';
@@ -17,7 +17,6 @@ const ChakraBox = chakra(motion.div, {
 });
 
 const Index = (props: Props) => {
-
 
     const ChakraHeading = chakra(motion.h3, {
         shouldForwardProp: (prop) => isValidMotionProp(prop) || prop === 'children',
@@ -171,7 +170,7 @@ const Index = (props: Props) => {
         'purple.900',
     ]
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (type == TYPES.GRADES) {
             document.title = average ? average.toFixed(2) + " | Zdaje.com" : "Zwykła | Zdaje.com";
         } else {
@@ -196,8 +195,6 @@ const Index = (props: Props) => {
     const { state } = useTransition();
     const errors = useActionData()
 
-
-
     const gradesColor = (grade: number) => {
         if (type == TYPES.GRADES) {
             const gradePercent = (grade / maxGrade * 100);
@@ -210,6 +207,30 @@ const Index = (props: Props) => {
         }
     }
 
+
+    const checked = () => {
+        if (typeof window !== 'undefined') {
+            if (localStorage.getItem('agree') === 'true') {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    const [isChecked, setIsChecked] = useState(checked())
+
+    const handleChecked = () => {
+        setIsChecked(!isChecked)
+        console.log(isChecked)
+        if (typeof window !== 'undefined') {
+            if (isChecked == true) {
+                localStorage.setItem('agree', "true")
+            } else {
+                localStorage.setItem('agree', "false")
+            }
+        }
+    }
 
 
     return (
@@ -238,87 +259,87 @@ const Index = (props: Props) => {
                 </Flex>
             </Flex>
 
-            {isSettingsScreenVisible &&
-                <ChakraBox layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 1 } }}>
-                    <Divider mb={5} mt={3} />
-                    <Wrap spacingX={{ base: '10px', sm: '40px' }} spacingY={{ base: '30px', lg: 0 }} justify='center'>
+            <LayoutGroup>
+                <AnimatePresence exitBeforeEnter>
+                    {isSettingsScreenVisible &&
+                        <ChakraBox layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: .1 } }}>
+                            <Divider mb={5} mt={3} />
+                            <Wrap spacingX={{ base: '10px', sm: '40px' }} spacingY={{ base: '30px', lg: 0 }} justify='center'>
 
-                        <WrapItem>
-                            <ChakraBox w={'100%'} layout flexDir={'column'}>
-                                <Text>Wartość plusa: </Text>
-                                <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={plusValue} onChange={handlePlusChange}>
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                </NumberInput>
+                                <WrapItem>
+                                    <ChakraBox w={'100%'} layout flexDir={'column'}>
+                                        <Text>Wartość plusa: </Text>
+                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={plusValue} onChange={handlePlusChange}>
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
 
-                                <Text mt={2}>Wartość minusa: </Text>
-                                <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={minusValue} onChange={handleMinusChange}>
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                </NumberInput>
-                            </ChakraBox>
-                        </WrapItem>
-                        {/* max i min grades */}
-                        <WrapItem>
-                            <ChakraBox w={'100%'} layout flexDir={'column'}>
-                                <Text>Maksymalna ocena: </Text>
-                                <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={maxGrade} onChange={handleMaxGradeChange}>
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                </NumberInput>
+                                        <Text mt={2}>Wartość minusa: </Text>
+                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={0.01} value={minusValue} onChange={handleMinusChange}>
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
+                                    </ChakraBox>
+                                </WrapItem>
+                                <WrapItem>
+                                    <ChakraBox w={'100%'} layout flexDir={'column'}>
+                                        <Text>Maksymalna ocena: </Text>
+                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={maxGrade} onChange={handleMaxGradeChange}>
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
 
-                                <Text mt={2}>Minimalna ocena: </Text>
-                                <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={minGrade} onChange={handleMinGradeChange}>
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                </NumberInput>
+                                        <Text mt={2}>Minimalna ocena: </Text>
+                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={minGrade} onChange={handleMinGradeChange}>
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
 
-                            </ChakraBox>
-                        </WrapItem>
+                                    </ChakraBox>
+                                </WrapItem>
 
-                        {/* max i min percent grades */}
-                        <WrapItem>
-                            <ChakraBox w={'100%'} layout flexDir={'column'}>
-                                <Text>Maksymalna ocena procentowa: </Text>
-                                <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={formatMaxPercentGrade(maxPercentGrade)} onChange={handleMaxPercentGradeChange}>
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                </NumberInput>
+                                <WrapItem>
+                                    <ChakraBox w={'100%'} layout flexDir={'column'}>
+                                        <Text>Maksymalna ocena procentowa: </Text>
+                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={formatMaxPercentGrade(maxPercentGrade)} onChange={handleMaxPercentGradeChange}>
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
 
-                                <Text mt={2}>Minimalna ocena procentowa: </Text>
-                                <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={formatMinPercentGrade(minPercentGrade)} onChange={handleMinPercentGradeChange}>
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                </NumberInput>
+                                        <Text mt={2}>Minimalna ocena procentowa: </Text>
+                                        <NumberInput maxW='400px' w='100%' mr='2rem' step={1} value={formatMinPercentGrade(minPercentGrade)} onChange={handleMinPercentGradeChange}>
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
 
-                            </ChakraBox>
-                        </WrapItem>
+                                    </ChakraBox>
+                                </WrapItem>
 
-                    </Wrap>
-                    <Divider mt={5} />
-                </ChakraBox>
-            }
+                            </Wrap>
+                            <Divider mt={5} />
+                        </ChakraBox>
+                    }
+                </AnimatePresence>
 
-            <Box maxW={'1200px'} w='100%' mx='auto'>
-                <LayoutGroup>
+                <Box maxW={'1200px'} w='100%' mx='auto'>
 
                     <AveragesUpBox isPlusMinusVisible={isPlusMinusVisible} />
 
@@ -387,15 +408,16 @@ const Index = (props: Props) => {
                             as={motion.li} layout flexDir={'column'} p={5}
                             alignItems='center' justifyContent={'center'}>
                             <Text as={motion.p} layout>Twoja średnia to:</Text>
-                            <ChakraHeading layout fontSize={'4xl'} fontFamily='Montserrat'>{average ?
-                                <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}</ChakraHeading>
+                            <AnimatePresence>
+                                <ChakraHeading layout fontSize={'4xl'} fontFamily='Montserrat'>{average ?
+                                    <>{type == TYPES.GRADES ? average.toFixed(2) : average.toFixed(2) + '%'}</> : <>---</>}</ChakraHeading>
+                            </AnimatePresence>
 
 
                             <Flex mt={3} as={motion.div} layout flexDir={{ base: 'column', md: 'row' }} alignItems='center'>
                                 <Flex flexDir={'column'} whiteSpace='nowrap'>
                                     <Text fontSize={'xs'} textAlign='center'>Obliczyłeś już swoją średnią?</Text>
                                     <Text mr={2}>Wyślij swoją średnią do bazy
-                                        {/* <Badge colorScheme={'green'}>nowość!</Badge> */}
                                     </Text>
                                 </Flex>
                                 <Tooltip bg={useColorModeValue("bg.900", "bg.100")} hasArrow label='Uzupełnij średnią, zanim ją wyślesz' display={!average ? 'block' : 'none'} shouldWrapChildren>
@@ -479,12 +501,20 @@ const Index = (props: Props) => {
                                             }
                                             <Flex as={'footer'} mb={2} mt={10} flexDir={'row'} justifyContent='space-between'>
                                                 <Flex flexDir={'row'} alignItems='center'>
-                                                    <chakra.input sx={{ accentColor: '#D53F8C' }} disabled={type == TYPES.GRADES ? false : true} bg={'white'} color='white' required type={'checkbox'} mr={2} w='20px' h='20px' />
+
+
+                                                    <Checkbox disabled={type == TYPES.GRADES ? false : true} required mr={2}
+                                                        borderColor={useColorModeValue("white", "black")} colorScheme='green'
+                                                        defaultChecked={isChecked}
+                                                        onChange={handleChecked}
+                                                    />
+
+
                                                     <Text w={{ base: '80%', lg: '60%' }} fontSize={'sm'}>Akceptuję <ChakraLink color={useColorModeValue("brand.100", "brand.900")} as={Link} to="/regulamin">regulamin </ChakraLink>
                                                         oraz <ChakraLink color={useColorModeValue("brand.100", "brand.900")} as={Link} to="/regulamin/zasady-wysylania-srednich-do-bazy">zasady
                                                             uczuciwego wysyłania średniej </ChakraLink> </Text>
                                                 </Flex>
-                                                <Button disabled={type == TYPES.GRADES ? false : true} colorScheme='purple' mr={3} type='submit'>
+                                                <Button disabled={type == TYPES.GRADES ? false : true} colorScheme='purple' bg='brand.900' mr={3} type='submit'>
                                                     {state == 'submitting' || state == 'loading' ? "Wysyłanie..." : "Wyślij"}
                                                 </Button>
                                             </Flex>
@@ -500,8 +530,8 @@ const Index = (props: Props) => {
 
                     </Wrap>
 
-                </LayoutGroup >
-            </Box >
+                </Box >
+            </LayoutGroup >
 
             <Phonebottom average={average} type={type} />
         </Flex >

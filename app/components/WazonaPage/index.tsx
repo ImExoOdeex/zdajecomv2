@@ -9,6 +9,7 @@ import { CheckIcon, ChevronDownIcon, SettingsIcon } from '@chakra-ui/icons';
 import subjects from './../../utils/subjects.json'
 import { useCookies } from 'react-cookie';
 import AveragesUpBox from '../averagesUpBox';
+import Reset from '../reset';
 
 type Props = {}
 
@@ -152,7 +153,7 @@ function GradesCard(props: any) {
                     />
 
                     {/* @ts-ignore */}
-                    <Button as={motion.button} layout onClick={{ backgroundColor: 'transparent' }}
+                    <Button as={motion.button} layout
                         //@ts-ignore
                         _hover='none' ml={'2'} type="submit" bg={'transparent'} fontWeight='normal'>Dodaj</Button>
                 </Flex>
@@ -303,16 +304,12 @@ function Index() {
     const formatMaxPercentGrade = (maxPercentGrade: number) => maxPercentGrade + `%`
     const formatMinPercentGrade = (minPercentGrade: number) => minPercentGrade + `%`
 
-    const [grades, setGrades] = useState({});
+    const [grades, setGrades] = useState([]);
     const [gradeKey, setGradeKey] = useState(0);
     const [weights, setWeights] = useSavedWeights();
     const [average, setAverage] = useState();
 
     const [isSettingsScreenVisible, setSettingsScreenVisible] = useState(false);
-    console.group('isSettingsScreenVisible')
-    console.log(isSettingsScreenVisible)
-    console.log(weights)
-    console.groupEnd()
     const [isWeightsVisible, setIsWeightsVisible] = useState(true);
 
 
@@ -386,6 +383,22 @@ function Index() {
     const errors = useActionData()
     const { state } = useTransition();
 
+
+    useEffect(() => {
+        if (type == TYPES.GRADES) {
+            document.title = average ? average.toFixed(2) + " | Zdaje.com" : "Ważona | Zdaje.com";
+        } else {
+            document.title = average ? average.toFixed(2) + "% | Zdaje.com" : "Ważona | Zdaje.com";
+        }
+    }, [TYPES.GRADES, average, type])
+
+    function reset() {
+        setGrades([]);
+        // setAverage(0);
+    }
+
+    console.log(grades)
+
     return (
         <>
             <Flex mx={[2, 2, 'auto']} h='auto' flexDir={'column'} mb={20} maxW='1600px'>
@@ -404,6 +417,7 @@ function Index() {
                     </Flex>
 
                     <Flex alignItems={'center'}>
+                        <Reset reset={handleGradesReset} grades={grades} />
                         <Button px='0'
                             onClick={() => setSettingsScreenVisible(!isSettingsScreenVisible)} mr={2} h='25px' transform="auto" _hover={{ bg: 'transparent', rotate: '45deg' }} _focus={{ bg: '' }} _active={{ bg: '' }} bg='transparent' >
                             <SettingsIcon w='100%' h='25px' />
@@ -503,9 +517,11 @@ function Index() {
 
                     <ChakraBox rounded={'md'} layout flexDir={'column'} p={5} w='100%' mx="auto" alignItems='center' justifyContent={'center'} justifyItems='center' textAlign='center'>
                         <Text as={motion.p} layout>Twoja średnia to:</Text>
-                        <ChakraHeading layout fontSize={'4xl'} fontFamily='Montserrat'>{average ?
-                            <>{type == TYPES.GRADES ? Number(average).toFixed(2) : Number(average).toFixed(2) + '%'}</> : <>---</>}
-                        </ChakraHeading>
+                        <AnimatePresence>
+                            <ChakraHeading layout fontSize={'4xl'} fontFamily='Montserrat'>{average ?
+                                <>{type == TYPES.GRADES ? Number(average).toFixed(2) : Number(average).toFixed(2) + '%'}</> : <>---</>}
+                            </ChakraHeading>
+                        </AnimatePresence>
 
                         <Flex mx={'auto'} mt={3} as={motion.div} layout flexDir={'column'} alignItems='center'>
                             <Flex flexDir={{ base: 'column', md: 'row' }}>

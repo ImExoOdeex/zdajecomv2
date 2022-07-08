@@ -5,6 +5,8 @@ import { type ActionFunction, json, redirect } from '@remix-run/node';
 import { db } from '~/utils/db.server';
 import subjects from '../../utils/subjects.json'
 import { commitSession, getSession } from '../../utils/sessions'
+import { useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 
 export const action: ActionFunction = async ({ request }) => {
@@ -62,12 +64,19 @@ export const action: ActionFunction = async ({ request }) => {
     });
 }
 
-function index() {
+export default function IndexPage() {
+
+    const location = useLocation();
+
     return (
-        <Layout>
-            <Index />
-        </Layout>
+        <motion.main key={location.key}
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1, transition: { type: 'tween', duration: .3 } }}
+            exit={{ y: 20, opacity: 0, transition: { duration: .15 } }}
+        >
+            <Layout>
+                <Index />
+            </Layout>
+        </motion.main>
     )
 }
-
-export default index

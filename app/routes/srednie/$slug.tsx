@@ -63,11 +63,15 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 }
 
 export default function AverageSlug() {
-    var { data, dataOne, success } = useLoaderData();
-    const newDate: any = new Date();
-    const timeNowMinutes: number = newDate.getMinutes();
-    const timeNowHours: number = newDate.getHours();
-    const timeNowDays: number = newDate.getDay();
+    var { data, dataOne, success } = useLoaderData() ?? {};
+
+    if (!data) {
+        return null;
+    }
+
+    if (!dataOne) {
+        return null;
+    }
 
     const opacity = .1;
 
@@ -192,7 +196,7 @@ export default function AverageSlug() {
                                                     <ChakraLink _hover={{ textDecor: 'none' }} as={Link} to={`/srednie/${average.subject}`}>
                                                         {average.subjectName}
                                                     </ChakraLink></Th>
-                                                <Th> <ReactTimeAgo date={average.createdAt} /> </Th>
+                                                <Th> <ReactTimeAgo timeStyle={'round'} date={average.createdAt} /> </Th>
                                             </Tr>
                                         )
                                     }

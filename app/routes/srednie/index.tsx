@@ -22,13 +22,9 @@ export const loader: LoaderFunction = async ({ params }) => {
             }
         }),
     };
-    const dataOne = await db.average.findFirst({
-        take: 1,
-        orderBy: {
-            id: 'desc'
-        }
-    })
-    return json({ data, dataOne });
+
+    const count = await db.average.count()
+    return json({ data, count });
 };
 
 export const meta: MetaFunction = () => {
@@ -41,7 +37,7 @@ export const meta: MetaFunction = () => {
 
 function index() {
     return (
-        <Layout>
+        <Layout slug=''>
             <Index />
         </Layout >
     )

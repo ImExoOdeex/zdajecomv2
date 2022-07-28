@@ -1,11 +1,12 @@
 import { Flex, Link as ChakraLink, Text, Tooltip, useColorModeValue } from '@chakra-ui/react'
+import { motion } from 'framer-motion'
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import subjects from './../../utils/subjects.json'
 
-type Props = { slug: String, success: any }
+type Props = { slug: String, success: any, props: any, display: any }
 
-function SubjectsAside({ slug, success }: Props) {
+function SubjectsAside({ slug, success, props, display = { base: 'none', lg: 'flex' } }: Props) {
     const sortedSubjects = subjects.sort((a: any, b: any) => {
         if (a.name < b.name) {
             return -1;
@@ -22,22 +23,23 @@ function SubjectsAside({ slug, success }: Props) {
     const opacity = .2
 
     return (
-        <Flex sx={{
-            "&::-webkit-scrollbar":
-                { width: '7px' },
-            '&::-webkit-scrollbar-track': {
-                backgroundColor: useColorModeValue("bg.100", "bg.900"),
-            },
-            '&::-webkit-scrollbar-thumb': {
-                background: useColorModeValue("rgb(223, 223, 230)", "rgb(37, 37, 40)"),
-                borderRadius: '24px',
-            },
-            '&::-webkit-scrollbar-thumb:hover': {
-                background: 'brand.900'
-            }
-        }}
+        <Flex
+            sx={{
+                "&::-webkit-scrollbar":
+                    { width: '7px' },
+                '&::-webkit-scrollbar-track': {
+                    backgroundColor: useColorModeValue("bg.100", "bg.900"),
+                },
+                '&::-webkit-scrollbar-thumb': {
+                    background: useColorModeValue("rgb(223, 223, 230)", "rgb(37, 37, 40)"),
+                    borderRadius: '24px',
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                    background: 'brand.900'
+                }
+            }}
             position={'sticky'} top={'100px'} mt={5} h={success ? `calc(100vh - 11rem)` : `calc(100vh - 8.125rem)`} overflow='auto' overflowY={'auto'}
-            ml={2} as={'aside'} mr={5} flexDir={'column'} display={{ base: 'none', lg: 'flex' }} w='300px' minW={'300px'}>
+            ml={2} as={motion.aside} layout mr={5} flexDir={'column'} display={!display ? { base: 'none', lg: 'flex' } : display} w='300px' minW={'300px'} {...props}>
             <Text color={useColorModeValue("brand.900", "brand.100")} fontSize='lg' fontWeight='bold' mb='2'>
                 Przedmioty
             </Text>

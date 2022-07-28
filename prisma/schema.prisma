@@ -13,4 +13,6 @@ model Average {
   subject     String
   subjectName String
   content     Float
+  type        String
+  user        String
 }

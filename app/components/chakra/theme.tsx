@@ -6,6 +6,7 @@ import { Dict } from '@chakra-ui/utils'
 const config: ThemeConfig = {
     initialColorMode: 'system',
     useSystemColorMode: true,
+    disableTransitionOnChange: false
 }
 
 const styles = {
@@ -16,10 +17,7 @@ const styles = {
         },
         th: {
             color: mode("#393942cc!important", "#dedef1be!important")(props),
-        },
-        // input: {
-        //     borderRadius: '3px !important',
-        // }
+        }
     })
 }
 
@@ -27,9 +25,6 @@ const colors = {
     brand: {
         100: '#a263e6',
         900: '#8F4FD3',
-    },
-    sec: {
-        500: '#FF00FF',
     },
     bg: {
         100: '#ffffff',

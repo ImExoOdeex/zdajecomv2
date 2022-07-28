@@ -1,12 +1,11 @@
 /* eslint-disable no-lone-blocks */
 import Layout from '~/components/Layout'
-import { type ActionFunction, json, redirect } from '@remix-run/node';
+import { type ActionFunction, json, redirect, type LoaderFunction } from '@remix-run/node';
 import Index from '../../components/ZwyklaPage/index';
 import { db } from '~/utils/db.server';
 import subjects from '../../utils/subjects.json'
 import { commitSession, getSession } from '../../utils/sessions'
-import { motion } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
+import { getClientIPAddress } from 'remix-utils';
 
 export const action: ActionFunction = async ({ request }) => {
     const form = await request.formData();
@@ -30,14 +29,27 @@ export const action: ActionFunction = async ({ request }) => {
         //@ts-ignore
         errors.valid = "Podaj właściwy przedmiot.";
     }
+    const type = form.get("type")
+    const user = form.get("user")
+
     if (typeof content !== 'number' || typeof subject !== 'string' || typeof subjectName !== 'string' || subject.length === 0 || subjectName.length === 0 ||
-        content === null) {
+        content === null || typeof type !== 'string' || typeof user !== 'string') {
         throw new Error(`Form not submitted correctly.`);
     }
-    if (content < 1 || content > 6) {
+
+    if ((content < 1 || content > 6) && type === 'zwykla') {
         //@ts-ignore
         errors.content = "Średnia może wynosić liczbę tylko w przedziale od 1 do 6."
+    } else if ((content < 0 || content > 100) && type === 'procentowa') {
+        //@ts-ignore
+        errors.content = "Średnia może wynosić liczbę tylko w przedziale od 0 do 100."
     }
+
+    if (type !== `procentowa` && type !== `zwykla`) {
+        // @ts-ignore
+        errors.content = errors.content ? errors.content + " Typ średniej może być tylko 'zwykła' lub 'procentowa'." : "Typ średniej może być tylko 'zwykła' lub 'procentowa'."
+    }
+
     if (Object.keys(errors).length) {
         return json(errors, { status: 422 });
     }
@@ -45,28 +57,22 @@ export const action: ActionFunction = async ({ request }) => {
         request.headers.get("Cookie")
     );
     session.flash("success", true)
-    const fields = { content, subject, subjectName };
+
+    const fields = { content, subject, subjectName, type, user };
     await db.average.create({ data: fields });
-    return redirect(`/srednie/${subject}`, {
-        headers: {
-            "Set-Cookie": await commitSession(session),
-        },
-    });
+    return (
+        redirect(`/srednie/${subject}`, {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        })
+    );
 }
 
 export default function IndexPage() {
-
-    const location = useLocation();
-
     return (
-        <motion.main key={location.key}
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1, transition: { type: 'tween', duration: .3 } }}
-            exit={{ y: 20, opacity: 0, transition: { duration: .15 } }}
-        >
-            <Layout>
-                <Index />
-            </Layout>
-        </motion.main>
+        <Layout slug=''>
+            <Index />
+        </Layout>
     )
 }

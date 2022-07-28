@@ -5,6 +5,7 @@ import SubjectsAside from '~/components/sredniaPage/SubjectsAside';
 import TimeAgo from 'javascript-time-ago'
 import pl from 'javascript-time-ago/locale/pl.json'
 import ReactTimeAgo from 'react-time-ago';
+import React, { useEffect, useRef } from 'react';
 
 TimeAgo.addDefaultLocale(pl)
 
@@ -13,18 +14,15 @@ type LoaderData = {
 };
 
 function Index() {
-    // { data } = (useLoaderData() ?? {})
-    const { data, dataOne }: any = useLoaderData<LoaderData>() ?? {};
+    const lastData = useRef({})
+    const lastCount = useRef({})
+    const { data, count }: any = useLoaderData<LoaderData>() || { data: lastData.current, count: lastCount.current };
 
-    if (!data) {
-        return null;
-    }
+    useEffect(() => {
+        if (data) lastData.current = data
+        if (count) lastCount.current = count
+    }, [data, count])
 
-    if (!dataOne) {
-        return null;
-    }
-
-    //sort list by id
     const sortedAverageList = data.averageList.sort((a: any, b: any) => {
         if (a.id < b.id) {
             return -1;
@@ -36,12 +34,11 @@ function Index() {
     }
     ).reverse()
 
-    //eslint-disable-next-line
     const tableHover = useColorModeValue("blackAlpha.100", "whiteAlpha.100")
 
     return (
         <Flex flexDir={'row'} maxW='1500px' mx='auto'>
-            {/* nawigacjyny komonent */}
+            {/* nav comp */}
             {/* @ts-ignore */}
             <SubjectsAside slug={''} />
             {/* main content */}
@@ -51,7 +48,13 @@ function Index() {
 
                     <Text fontSize={'lg'} fontWeight={'bold'}>Dodano już
                         {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
-                        <chakra.span color={useColorModeValue("brand.900", "brand.100")} textShadow='0px 0px 5px #6938c5'> {dataOne.id} </chakra.span>
+                        <chakra.span color={useColorModeValue("brand.900", "brand.100")} textShadow='0px 0px 5px #6938c5'>
+                            {' '}
+                            {/* {typeof document !== 'undefined' &&
+                                <Odometer value={count} />
+                            } */}
+                            {count} {" "}
+                        </chakra.span>
                         średnich!</Text>
 
 
@@ -72,7 +75,6 @@ function Index() {
                             <Tbody>
 
                                 {sortedAverageList.map((average: any) => {
-
 
                                     return (
                                         <Tr _hover={{ bg: tableHover, transition: '.1s' }} transition='.1s' key={average.id}>

@@ -8,13 +8,15 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
-import { Outlet, useLocation, useOutlet } from 'react-router-dom'
-import { MetaFunction, LinksFunction, LoaderFunction } from '@remix-run/node'
+import { useLocation, useOutlet } from 'react-router-dom'
+import { type MetaFunction, type LinksFunction, type LoaderFunction, redirect } from '@remix-run/node'
 import { ServerStyleContext, ClientStyleContext } from './context'
 import theme from './components/chakra/theme';
 import Fonts from './components/chakra/Fonts'
 import { AnimatePresence, motion } from 'framer-motion'
 import globalCSS from '../styles/globals.css'
+import { v4 } from 'uuid'
+import { getCookie } from './utils/CookiesFunc'
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
@@ -58,6 +60,7 @@ const Document = withEmotionCache(
       });
       // reset cache to reapply global styles
       clientStyleData?.reset();
+      // eslint-disable-next-line
     }, []);
 
     return (
@@ -87,6 +90,7 @@ const Document = withEmotionCache(
 
 export default function App({ cookies }: any) {
   const outlet = useOutlet();
+  const location = useLocation()
 
   const colorModeManager =
     typeof cookies === 'string'
@@ -94,12 +98,21 @@ export default function App({ cookies }: any) {
       ? cookieStorageManager(cookies)
       : localStorageManager
 
+  if (typeof document !== 'undefined') {
+    const user = getCookie('user')
+    if (!user) {
+      document.cookie = `user=${v4()}`
+    }
+  }
+
   return (
     <Document>
       <ChakraProvider theme={theme} colorModeManager={colorModeManager}>
         <chakra.main minH='90vh'>
-          <AnimatePresence exitBeforeEnter={true}>
-            {outlet}
+          <AnimatePresence exitBeforeEnter={true} initial={false}>
+            <motion.main key={location.pathname}>
+              {outlet}
+            </motion.main>
           </AnimatePresence>
         </chakra.main>
         <Fonts />
@@ -110,6 +123,14 @@ export default function App({ cookies }: any) {
 
 
 export const loader: LoaderFunction = async ({ request }) => {
+
+  if (process.env.NODE_ENV !== 'development') {
+    const url = new URL(request.url)
+    if (!url.hostname.startsWith("www.")) {
+      url.hostname = `www.${url.hostname}`
+      return redirect(url.toString())
+    }
+  }
   return {
     props: {
       // @ts-ignore

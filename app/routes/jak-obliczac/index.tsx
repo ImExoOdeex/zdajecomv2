@@ -4,7 +4,7 @@ import Index from './../../components/jakObliczacPage/index';
 
 function index() {
     return (
-        <Layout>
+        <Layout slug=''>
             <Index />
         </Layout>
     )

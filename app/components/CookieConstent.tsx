@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Button, chakra, Flex, useColorModeValue, Text, Image } from '@chakra-ui/react';
-import { motion, isValidMotionProp, AnimatePresence } from 'framer-motion';
+import { Button, Flex, Text, Image, LightMode, Stack, Box } from '@chakra-ui/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function CookieConstent() {
 
@@ -14,56 +14,45 @@ function CookieConstent() {
         } else {
             setIsCookieConsent(false)
         }
-
     }, [])
 
-    function setCookie() {
+    function accept() {
         localStorage.setItem(name, "true")
         setIsCookieConsent(true)
     }
 
-
-
-    const ChakraBox = chakra(motion.div, {
-        shouldForwardProp: (prop) => isValidMotionProp(prop) || prop === 'children',
-    })
-    const tealColor = useColorModeValue('teal.600', 'teal.200');
     return (
         <AnimatePresence>
             {!isCookieConsent &&
-                <ChakraBox
-                    initial={!isCookieConsent ? { opacity: 1 } : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={!isCookieConsent ? { opacity: 1 } : { opacity: 0 }}
-                    pos="fixed"
-                    bottom="10"
-                    left={[0, 0, 10]}
-                    zIndex="9999"
-                // display={isCookieConsent ? 'none' : 'flex'}
+                <motion.div
+                    exit={{ height: 0, transition: { ease: 'easeInOut' } }}
+                    style={{ overflow: 'hidden', display: 'block' }}
                 >
-                    <ChakraBox
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 200 }}
-                        //@ts-ignore
-                        transition={{ duration: 0.4, type: 'spring', bounce: '0' }}
-                        maxW={'400px'} m='auto' mx={[4, 4, 'auto']} rounded='md' p={7} justifyContent="center" alignItems="center" border='1px solid' borderColor={tealColor}
-                        bg={useColorModeValue('bg.100', 'bg.900')} align="center" display={'flex'} flexDir={'column'}>
-                        <Flex flexDir={'row'}>
-                            <Text fontSize="sm" color={useColorModeValue('gray.900', 'gray.200')}>
-                                Używamy ciasteczek, aby zapewnić najlepsze doświadczenie wszystkich użytkowników.
-                            </Text>
-                            <Image w={'60px'} src="https://ik.imagekit.io/o532f5vcp38/cookie_yzEnFaENZ.svg?updatedAt=1628271705356" alt='cookie' />
-                        </Flex>
-                        <Button colorScheme={'teal'} mt={5} minW='100px'
-                            variant="outline"
-                            onClick={setCookie}
-                            fontWeight='normal'
-                            w={'100%'}
-                        >
-                            OK
-                        </Button>
-                    </ChakraBox>
-                </ChakraBox>
+                    <Box
+                        fontWeight={'500'} py={[5, 7, 10]} h={'auto'} w='100%' bg={'brand.900'}
+                        display='flex'
+                        color="white" px={[2, 2, 5]} justifyContent='space-around' flexDir={['column', 'column', 'row']} alignItems='center' >
+                        <LightMode>
+                            <Stack direction={{ base: 'column', md: 'row' }} spacing={[3, 5, 10]} alignItems={'center'}>
+                                <Image src={'/cookies.png'} w={'70px'} alt="cookies" />
+                                <Text alignItems={'center'}>Strona korzysta z plików cookie, które są wykorzystywane przez strony trzecie.
+                                    Jeślij nie wyrażasz zgody na użycie plików cookie, powinieneś natychmiast
+                                    opuścić stronę.
+                                </Text>
+                            </Stack>
+
+                            <Flex alignItems={'center'} justifyItems='center' justifyContent='center'
+                                mt={[4, 2, 0]} w={['100%', '100%', 'unset']}>
+                                <Button onClick={accept} fontStyle={'normal'} fontWeight='600'
+                                    bg='white' color={'blackAlpha.800'}
+                                    mx={{ base: `auto !important`, md: 'unset' }}
+                                    w={{ base: '75%', md: 'unset' }}>
+                                    <Text mx={5}>Akceptuję</Text>
+                                </Button>
+                            </Flex>
+                        </LightMode>
+                    </Box>
+                </motion.div>
             }
         </AnimatePresence >
     )
